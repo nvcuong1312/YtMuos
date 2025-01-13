@@ -62,6 +62,7 @@ function love.update(dt)
     if searchResult then
         searchData = CT.LoadSearchData()
         LoadImgData()
+        isLoading = false
     end
 
     local playDone = Thread.GetPlayDone():pop()
