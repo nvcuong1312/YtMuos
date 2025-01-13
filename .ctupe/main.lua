@@ -44,7 +44,7 @@ function love.draw()
 
     love.graphics.setFont(Font.Small())
 
-    Keyboard:draw()
+    Keyboard:draw(isKeyboarFocus)
 
     if isLoading then
         Loading.Draw()
@@ -86,12 +86,12 @@ function HeaderUI()
 
     love.graphics.setColor(Color.HEADER_TEXT)
     love.graphics.setFont(Font.Big())
-    Text.DrawCenteredText(xPos, yPos, 640, "CTupe")
+    Text.DrawCenteredText(xPos, yPos + 3, 640, "CTupe")
 
     Now = os.date('*t')
     local formatted_time = string.format("%02d:%02d", tonumber(Now.hour), tonumber(Now.min))
     love.graphics.setColor(Color.HEADER_TIME)
-    Text.DrawLeftText(xPos, yPos, formatted_time)
+    Text.DrawLeftText(xPos, yPos + 3, formatted_time)
 
     love.graphics.setFont(Font.Normal())
 end
@@ -143,9 +143,11 @@ function BodyUI()
         love.graphics.setColor(Color.BODY_TITLE_ITEM)
         love.graphics.setFont(Font.Normal())
         love.graphics.printf(searchData[i].title, xPos + widthImgItem + 1, yPos + h, 320)
+
+        love.graphics.setColor(Color.BODY_CHANNEL_ITEM)
         love.graphics.setFont(Font.Small())
         love.graphics.print(searchData[i].channelTitle, xPos, yPos + h + 63)
-        love.graphics.print(searchData[i].time, xPos + widthImgItem + 250, yPos + h + 63)
+        love.graphics.print(searchData[i].time, xPos + widthImgItem + 240, yPos + h + 63)
 
         if cIdx == iPos + 1 then
             love.graphics.setColor(Color.BODY_ITEM_SEL_BG)

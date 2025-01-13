@@ -1,7 +1,13 @@
 local love = require("love")
 local Font = require("font")
+local Color = require("color")
+local Text = require("text")
 local Keyboard = {}
 
+Keyboard.w = 239
+Keyboard.h = 94
+Keyboard.x = 401
+Keyboard.y = 175
 Keyboard.width = 215.1
 Keyboard.height = 84.6
 Keyboard.spacing = 1
@@ -45,24 +51,34 @@ function Keyboard:create()
     end
 end
 
-function Keyboard:draw()
+function Keyboard:draw(isKeyboarFocus)
     love.graphics.setFont(Font.Small())
     for _, key in ipairs(self.keys) do
         if key.index == self.selected_key then
-            love.graphics.setColor(0.6, 0.6, 0.6)
+            love.graphics.setColor(Color.KEYBOARD_SEL)
         else
-            love.graphics.setColor(0.8, 0.8, 0.8)
+            love.graphics.setColor(Color.KEYBOARD_NO_SEL)
         end
-        love.graphics.rectangle("fill", key.x, key.y, key.w, key.h, 3, 3)
-        love.graphics.setColor(0, 0, 0)
-        love.graphics.rectangle("line", key.x, key.y, key.w, key.h, 3, 3)
+        love.graphics.rectangle("fill", key.x, key.y, key.w, key.h, 0, 0)
+        love.graphics.setColor(Color.KEYBOARD_BORDER)
+        love.graphics.rectangle("line", key.x, key.y, key.w, key.h, 0, 0)
 
         local label = key.key:lower()
 
         local text_width = love.graphics.getFont():getWidth(label)
         local text_height = love.graphics.getFont():getHeight()
 
+        love.graphics.setColor(Color.KEYBOARD_CHAR)
         love.graphics.print(label, key.x + (key.w - text_width) / 2, key.y + (key.h - text_height) / 2)
+    end
+
+    if not isKeyboarFocus then
+        love.graphics.setColor(Color.KEYBOAR_BG)
+        love.graphics.rectangle("fill", self.x, self.y, self.w, self.h, 3, 3)
+
+        love.graphics.setColor(Color.KEYBOAR_TEXT)
+        love.graphics.setFont(Font.Normal())
+        Text.DrawCenteredText(self.x, self.y + 35, self.w, "Press L1 to ON/OFF keyboard")
     end
 end
 
