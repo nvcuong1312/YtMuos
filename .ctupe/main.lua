@@ -6,6 +6,7 @@ local Keyboard = require("keyboard")
 local Thread = require("thread")
 local Loading = require("loading")
 local Text = require("text")
+local Color = require("color")
 
 local msg = "DEVELOPMENT STAGE"
 local hasAPIKEY = false
@@ -35,7 +36,7 @@ function love.load()
 end
 
 function love.draw()
-    love.graphics.setBackgroundColor(0.027, 0.004, 0.102)
+    love.graphics.setBackgroundColor(Color.BG)
     HeaderUI()
     BodyUI()
     BottomUI()
@@ -80,16 +81,16 @@ function HeaderUI()
     local xPos = 0
     local yPos = 0
 
-    love.graphics.setColor(0.969, 0.153, 0.153)
+    love.graphics.setColor(Color.HEADER_BG)
     love.graphics.rectangle("fill", xPos, yPos, 640, 30)
 
-    love.graphics.setColor(0.98, 0.98, 0.749)
+    love.graphics.setColor(Color.HEADER_TEXT)
     love.graphics.setFont(Font.Big())
     Text.DrawCenteredText(xPos, yPos, 640, "CTupe")
 
     Now = os.date('*t')
     local formatted_time = string.format("%02d:%02d", tonumber(Now.hour), tonumber(Now.min))
-    love.graphics.setColor(0.98, 0.98, 0.749, 0.7)
+    love.graphics.setColor(Color.HEADER_TIME)
     Text.DrawLeftText(xPos, yPos, formatted_time)
 
     love.graphics.setFont(Font.Normal())
@@ -118,18 +119,18 @@ function BodyUI()
         if i > total then break end
 
         local h = heightItem * (iPos) + iPos + 1
-        love.graphics.setColor(0.004, 0.173, 0.231)
+        love.graphics.setColor(Color.BODY_ITEM_BG)
         love.graphics.rectangle("fill", xPos, yPos + h , widthItem, heightItem)
 
         for _,imgData in pairs(imgDataList) do
             pcall(function ()
                 if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
                     local img = love.graphics.newImage(imgData.imgData)
-                    love.graphics.setColor(1, 1, 1)
+                    love.graphics.setColor(Color.WHITE)
                     local scale = ScaleFactorImg(img:getWidth(), img:getHeight(), widthImgItem, heigthImgItem)
                     love.graphics.draw(img, xPos, yPos + h, 0, scale.scaleW, scale.scaleH, 0 , 0)
                 end
-    
+
                 if cIdx == iPos + 1 then
                     if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
                         imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
@@ -139,7 +140,7 @@ function BodyUI()
             end)
         end
 
-        love.graphics.setColor(1,1,1,0.6)
+        love.graphics.setColor(Color.BODY_TITLE_ITEM)
         love.graphics.setFont(Font.Normal())
         love.graphics.printf(searchData[i].title, xPos + widthImgItem + 1, yPos + h, 320)
         love.graphics.setFont(Font.Small())
@@ -147,16 +148,16 @@ function BodyUI()
         love.graphics.print(searchData[i].time, xPos + widthImgItem + 250, yPos + h + 63)
 
         if cIdx == iPos + 1 then
-            love.graphics.setColor(1, 1, 0.4, 0.15)
+            love.graphics.setColor(Color.BODY_ITEM_SEL_BG)
             love.graphics.rectangle("fill", xPos, yPos + h, widthItem, heightItem, 4)
         end
 
         iPos = iPos + 1
     end
 
-    love.graphics.setColor(0.004, 0.173, 0.231)
+    love.graphics.setColor(Color.BODY_IMG_DEF)
     if imgSelected then
-        love.graphics.setColor(1, 1, 1)
+        love.graphics.setColor(Color.WHITE)
         love.graphics.draw(imgSelected, xPos + widthItem + 1, yPos, 0, imgSelectedScale.scaleW, imgSelectedScale.scaleH, 0 , 0)
     else
         love.graphics.rectangle("fill", xPos + widthItem + 1, yPos, widthImgMain, heightImgMain)
@@ -166,7 +167,7 @@ end
 function BottomUI()
     local xPos = 0
     local yPos = 480 - 30 + 1
-    love.graphics.setColor(0.102, 0, 0.459)
+    love.graphics.setColor(Color.BOTTOM_BG)
     love.graphics.rectangle("fill", xPos, yPos, 640, 29)
 
     love.graphics.setColor(1,1,1)
@@ -180,12 +181,12 @@ function GuideUI()
     local height = 180
     local heightTextBlock = 30
 
-    love.graphics.setColor(0.004, 0.173, 0.231)
+    love.graphics.setColor(Color.GUIDE_BG)
     love.graphics.rectangle("fill", xPos, yPos, width, height)
 
-    love.graphics.setColor(0.304, 0.173, 0.231, 1)
+    love.graphics.setColor(Color.GUIDE_TB_BG)
     love.graphics.rectangle("fill", xPos + 15, yPos, width - 30, heightTextBlock)
-    love.graphics.setColor(1,1,1,0.9)
+    love.graphics.setColor(Color.GUIDE_TB)
     Text.DrawLeftText(xPos + 15 + 2, yPos + 5, keyboardText)
 
     love.graphics.setColor(1,1,1,0.9)
