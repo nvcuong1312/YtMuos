@@ -122,19 +122,21 @@ function BodyUI()
         love.graphics.rectangle("fill", xPos, yPos + h , widthItem, heightItem)
 
         for _,imgData in pairs(imgDataList) do
-            if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
-                local img = love.graphics.newImage(imgData.imgData)
-                love.graphics.setColor(1, 1, 1)
-                local scale = ScaleFactorImg(img:getWidth(), img:getHeight(), widthImgItem, heigthImgItem)
-                love.graphics.draw(img, xPos, yPos + h, 0, scale.scaleW, scale.scaleH, 0 , 0)
-            end
-
-            if cIdx == iPos + 1 then
+            pcall(function ()
                 if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
-                    imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
-                    imgSelected = love.graphics.newImage(imgData.imgData)
+                    local img = love.graphics.newImage(imgData.imgData)
+                    love.graphics.setColor(1, 1, 1)
+                    local scale = ScaleFactorImg(img:getWidth(), img:getHeight(), widthImgItem, heigthImgItem)
+                    love.graphics.draw(img, xPos, yPos + h, 0, scale.scaleW, scale.scaleH, 0 , 0)
                 end
-            end
+    
+                if cIdx == iPos + 1 then
+                    if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
+                        imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
+                        imgSelected = love.graphics.newImage(imgData.imgData)
+                    end
+                end
+            end)
         end
 
         love.graphics.setColor(1,1,1,0.6)
