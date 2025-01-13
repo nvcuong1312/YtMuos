@@ -49,15 +49,40 @@ function CT.LoadSearchData()
                         if items ~= nil and table.getn(items) > 0 then
                             for _, item in pairs(items) do
                                 if item.videoRenderer then
+                                    local time = ""
+                                    if item.videoRenderer.publishedTimeText ~= nil then
+                                        time = item.videoRenderer.publishedTimeText.simpleText
+                                    end
+
+                                    local title = "Title"
+                                    if item.videoRenderer.title ~= nil
+                                       and item.videoRenderer.title.runs ~= nil
+                                       and table.getn(item.videoRenderer.title.runs) > 0 then
+                                        title = item.videoRenderer.title.runs[1].text
+                                    end
+
+                                    local thumbnail = {}
+                                    if item.videoRenderer.thumbnail ~= nil
+                                     and item.videoRenderer.thumbnail.thumbnails ~= nil
+                                     and table.getn(item.videoRenderer.thumbnail.thumbnails) > 0 then
+                                        thumbnail = item.videoRenderer.thumbnail.thumbnails[1]
+                                    end
+
+                                    local channelTitle = ""
+                                    if item.videoRenderer.ownerText ~= nil
+                                     and item.videoRenderer.ownerText.runs ~= nil
+                                     and table.getn(item.videoRenderer.ownerText.runs) > 0 then
+                                        channelTitle = item.videoRenderer.ownerText.runs[1].text
+                                    end
+
                                     table.insert(resultData,
                                     {
                                         id = item.videoRenderer.videoId,
-                                        time = item.videoRenderer.publishedTimeText.simpleText,
-                                        title = item.videoRenderer.title.runs[1].text,
+                                        time = time,
+                                        title = title,
                                         description = "",
-                                        thumbnail = item.videoRenderer.thumbnail.thumbnails[1],
-                                        thumbnailMed = item.videoRenderer.thumbnail.thumbnails[2],
-                                        channelTitle = item.videoRenderer.ownerText.runs[1].text
+                                        thumbnail = thumbnail,
+                                        channelTitle = channelTitle
                                     })
                                 end
                             end
