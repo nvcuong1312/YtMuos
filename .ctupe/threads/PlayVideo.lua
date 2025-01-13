@@ -7,7 +7,7 @@ local dChn = Thread.GetPlayDone()
 while true do
     local uObj = uChn:pop()
     if uObj then
-        local command = string.format(Config.PLAY_FFPLAY_CMD, uObj)
+        local command = string.format(Config.PLAY_MPV_CMD, uObj)
         os.execute(command)
         dChn:push(true)
     end

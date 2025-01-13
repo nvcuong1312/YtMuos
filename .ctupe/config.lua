@@ -76,9 +76,9 @@ export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 SET_VAR "system" "foreground_process" "mpv"
 
 $GPTOKEYB "mpv" -c "$APP_DIR/general.gptk" &
-    /usr/bin/mpv --input-ipc-server=/tmp/ctupesocket "$FILE"
+youtube-dl -g "res:640" "$URL" | xargs mpv
 
-killall -q gptokeyb2
+kill -9 "$(pidof gptokeyb2)"
 
 unset SDL_HQ_SCALER SDL_ROTATION SDL_BLITTER_DISABLED
 
