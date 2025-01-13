@@ -9,13 +9,9 @@ while true do
     if searchData then
         local command = ""
         if searchData.type == "1" then
-            local searchCmd =
-            [[
-                wget "https://www.youtube.com/results?search_query=%s&sp=EgIQAQ%3D%3D" -O data/searchDataFull.txt &
-                    grep -oP 'var ytInitialData = \K.*?(?=;</script>)' data/searchDataFull.txt > result_cr.json
-            ]]
-
-            command = string.format(searchCmd, searchData.search)
+            local searchCmd = "wget \"https://www.youtube.com/results?search_query=".. searchData.search .. "&sp=EgIQAQ%3D%3D\" -O data/searchDataFull.txt & "
+            local jsCmd = "grep -oP 'var ytInitialData = \\K.*?(?=;</script>)' data/searchDataFull.txt > result_cr.json"
+            command = searchCmd .. jsCmd
         else
             local searchCmd = string.format(Config.SEARCH_URL, searchData.search, Config.SEARCH_MAX_RESULT, searchData.key)
             command = "wget \"" .. searchCmd .."\" -O " .. Config.SEARCH_RESUTL_JSON
