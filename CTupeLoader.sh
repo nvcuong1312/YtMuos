@@ -44,7 +44,7 @@ if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 		rm -r "mnt/mmc/MUOS/task/CTupeLoader.sh"
 	fi
 	
-	cp "CTupeData/UnzipData/YtMuos-dev/CTupeLoader.sh" "mnt/mmc/MUOS/task/CTupeLoader.sh"
+	cp "CTupeData/UnzipData/YtMuos-master/CTupeLoader.sh" "mnt/mmc/MUOS/task/CTupeLoader.sh"
 	
 	echo "Done!"
 else
