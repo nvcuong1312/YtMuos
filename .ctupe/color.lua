@@ -21,7 +21,9 @@ Color.BOTTOM_BG = {0.102, 0, 0.459}
 
 --Guide
 Color.GUIDE_BG = {0.004, 0.173, 0.231}
-Color.GUIDE_TB_BG = {0.304, 0.173, 0.231, 1}
+Color.GUIDE_TB_BG = {0.145, 0.102, 0.2}
+Color.GUIDE_TB_BOR_BG = {0.282, 0.278, 0.29}
+Color.GUIDE_TB = {1,1,1,0.9}
 Color.GUIDE_TB = {1,1,1,0.9}
 
 -- Keyboard

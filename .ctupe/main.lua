@@ -7,6 +7,7 @@ local Thread = require("thread")
 local Loading = require("loading")
 local Text = require("text")
 local Color = require("color")
+local Icon = require("icon")
 
 local msg = "DEVELOPMENT STAGE"
 local hasAPIKEY = false
@@ -179,27 +180,45 @@ end
 function GuideUI()
     local xPos = 401
     local yPos = 30 + 240
-    local width = 239
+    local width = 265
     local height = 180
     local heightTextBlock = 30
 
     love.graphics.setColor(Color.GUIDE_BG)
-    love.graphics.rectangle("fill", xPos, yPos, width, height)
+    love.graphics.rectangle("fill", xPos, yPos, width, height, 3,3)
 
     love.graphics.setColor(Color.GUIDE_TB_BG)
-    love.graphics.rectangle("fill", xPos + 15, yPos, width - 30, heightTextBlock)
+    love.graphics.rectangle("fill", xPos + 2, yPos + 2, width - 30, heightTextBlock, 3,3)
+    love.graphics.setColor(Color.GUIDE_TB_BOR_BG)
+    love.graphics.rectangle("line", xPos + 2, yPos + 2, width - 30, heightTextBlock, 3,3)
     love.graphics.setColor(Color.GUIDE_TB)
-    Text.DrawLeftText(xPos + 15 + 2, yPos + 5, keyboardText)
+    Text.DrawLeftText(xPos + 2 + 2, yPos + 2 + 5, keyboardText)
+    love.graphics.setColor(Color.GUIDE_TB)
+    love.graphics.draw(Icon.Search, xPos + width - 50, yPos + 5, 0, 0.2)
 
-    love.graphics.setColor(1,1,1,0.9)
+    love.graphics.setColor(1,1,1,0.7)
     love.graphics.setFont(Font.Small())
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock, "[A] : Play")
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 20, "[L1]: Toggle Keyboard")
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 40, "[Y] : Enter")
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 60, "[X] : Backspace")
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 80, "[B] : Space")
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 100, "[Start]: Search")
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "[Start + Select] : Exit")
+
+    if isKeyboarFocus then
+        Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 20, "       Enter")
+        love.graphics.draw(Icon.Y, xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
+
+        Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Backspace")
+        love.graphics.draw(Icon.X, xPos + 5, yPos + heightTextBlock + 48, 0, 0.4)
+
+        Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Space")
+        love.graphics.draw(Icon.B, xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
+
+        Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 50, "       Search")
+        love.graphics.draw(Icon.Start, xPos + 5 + 100, yPos + heightTextBlock + 48, 0, 0.4)
+    else
+        Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 20, "       Play")
+        love.graphics.draw(Icon.A , xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
+    end
+
+    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "                     Exit")
+    love.graphics.draw(Icon.Select, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
+    love.graphics.draw(Icon.Start, xPos + 5 + 30, yPos + heightTextBlock + 118, 0, 0.4)
 end
 
 function LoadImgData()
@@ -300,13 +319,6 @@ function OnKeyPress(key)
         CT.Search(keyboardText)
     end
 
-    if key == "a" then
-        if table.getn(searchData) >= cIdx  then
-            isLoading = true
-            CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
-        end
-    end
-
     if key == "select" then
     end
 
@@ -319,6 +331,13 @@ function OnKeyPress(key)
     if isKeyboarFocus then
         Keyboard.keypressed(key, OnKeyboarCallBack)
         return
+    end
+
+    if key == "a" then
+        if table.getn(searchData) >= cIdx  then
+            isLoading = true
+            CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
+        end
     end
 
     if table.getn(searchData) > 0 then
