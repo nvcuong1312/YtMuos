@@ -130,7 +130,7 @@ function BodyUI()
             end
 
             if cIdx == iPos + 1 then
-                if imgData.id == searchData[i].id and imgData.type == "thumbnailMed" then
+                if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
                     imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
                     imgSelected = love.graphics.newImage(imgData.imgData)
                 end
@@ -208,15 +208,15 @@ function LoadImgData()
             height = item.thumbnail.height,
             type = "thumbnail"
         })
-        
-        uChn:push(
-        {
-            id = item.id,
-            url = item.thumbnailMed.url,
-            width = item.thumbnailMed.width,
-            height = item.thumbnailMed.height,
-            type = "thumbnailMed"
-        })
+
+        -- uChn:push(
+        -- {
+        --     id = item.id,
+        --     url = item.thumbnailMed.url,
+        --     width = item.thumbnailMed.width,
+        --     height = item.thumbnailMed.height,
+        --     type = "thumbnailMed"
+        -- })
     end
 end
 
