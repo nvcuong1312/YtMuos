@@ -5,6 +5,7 @@ local Thread = {}
 function Thread.Create()
     love.thread.newThread("threads/ImgDownload.lua"):start()
     love.thread.newThread("threads/PlayVideo.lua"):start()
+    love.thread.newThread("threads/SearchVideo.lua"):start()
 end
 
 function Thread.GetDownloadResutlChannel()
@@ -21,6 +22,14 @@ end
 
 function Thread.GetPlayDone()
     return love.thread.getChannel("play_done")
+end
+
+function Thread.GetSearchVideoKeywordChannel()
+    return love.thread.getChannel("search_keyword")
+end
+
+function Thread.GetSearchVideoResultChannel()
+    return love.thread.getChannel("search_result")
 end
 
 return Thread

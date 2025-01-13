@@ -9,22 +9,30 @@ local uChn = Thread.GetDownloadUrlChannel()
 while true do
     local uObj = uChn:pop()
     if uObj then
+        local url = uObj.url
+        local width = uObj.width
+        local height = uObj.height
+
         local buffer = {}
-        local success, status = pcall(function()
+        local requestSuccess,_ = pcall(function()
             http.request{
-                url = uObj.url,
+                url = url,
                 sink = ltn12.sink.table(buffer)
             }
         end)
 
-        if success then
-            local file_data = love.filesystem.newFileData(table.concat(buffer), '' ,'file')
-            rsChn:push(
-            {
-                id = uObj.id,
-                imgData = file_data,
-                type = uObj.type
-            })
+        if requestSuccess then
+            local _,_ = pcall(function()
+                local file_data = love.filesystem.newFileData(table.concat(buffer), '' ,'file')
+                rsChn:push(
+                {
+                    id = uObj.id,
+                    imgData = file_data,
+                    width = width,
+                    height = height,
+                    type = uObj.type
+                })
+            end)
         end
     end
 end

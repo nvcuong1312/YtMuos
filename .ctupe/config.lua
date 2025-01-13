@@ -6,11 +6,15 @@ Config.MEDIA_PATH = "data/media"
 Config.API_KEY_PATH = "data/api"
 
 Config.SEARCH_RESUTL_JSON = "data/result.json"
+Config.SEARCH_RESUTL_CR_JSON = "data/result_cr.json"
+Config.SEARCH_TYPE = "data/TYPE"
 
 Config.FONT_PATH = "Assets/Font/Font.ttf"
 
 Config.SEARCH_URL = "https://www.googleapis.com/youtube/v3/search?part=snippet&q=%s&type=video&maxResults=%s&key=%s"
 Config.SEARCH_MAX_RESULT = 30
+
+Config.YT_PLAY_URL = "https://www.youtube.com/watch?v=%s"
 
 Config.PLAY_FFPLAY_CMD =
 [[

@@ -25,13 +25,11 @@ function love.load()
     Keyboard:create()
     Thread.Create()
 
-    if CT.LoadAPIKEY() == "YOUR_API_KEY_HERE" then
-        msg = "APIKEY is missing"
-        return
-    end
+    CT.LoadSearchType()
+    CT.LoadAPIKEY()
 
-    searchData = CT.LoadOldData()
-    SearchData()
+    searchData = CT.LoadSearchData()
+    LoadImgData()
 
     hasAPIKEY = true
 end
@@ -58,6 +56,12 @@ function love.update(dt)
     local imgDownloaded = Thread.GetDownloadResutlChannel():pop()
     if imgDownloaded then
         table.insert(imgDataList, imgDownloaded)
+    end
+
+    local searchResult = Thread.GetSearchVideoResultChannel():pop()
+    if searchResult then
+        searchData = CT.LoadSearchData()
+        LoadImgData()
     end
 
     local playDone = Thread.GetPlayDone():pop()
@@ -96,10 +100,10 @@ function BodyUI()
     local widthItem = 400
     local heightItem = 83
     local widthImgItem = 83
-    local heigthImgItem = 83
+    local heigthImgItem = 63
 
     local widthImgMain = 239
-    local heightImgMain = 239
+    local heightImgMain = 145
 
     local total = table.getn(searchData)
     local idxStart = cPage * Config.GRID_PAGE_ITEM - Config.GRID_PAGE_ITEM + 1
@@ -107,6 +111,7 @@ function BodyUI()
     local iPos = 0
 
     local imgSelected = nil
+    local imgSelectedScale = {}
 
     for i = idxStart, idxEnd do
         if i > total then break end
@@ -119,11 +124,13 @@ function BodyUI()
             if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
                 local img = love.graphics.newImage(imgData.imgData)
                 love.graphics.setColor(1, 1, 1)
-                love.graphics.draw(img, xPos, yPos + h, 0, 0.66, 0.66, 0 , 0)
+                local scale = ScaleFactorImg(img:getWidth(), img:getHeight(), widthImgItem, heigthImgItem)
+                love.graphics.draw(img, xPos, yPos + h, 0, scale.scaleW, scale.scaleH, 0 , 0)
             end
 
             if cIdx == iPos + 1 then
                 if imgData.id == searchData[i].id and imgData.type == "thumbnailMed" then
+                    imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
                     imgSelected = love.graphics.newImage(imgData.imgData)
                 end
             end
@@ -147,7 +154,7 @@ function BodyUI()
     love.graphics.setColor(0.004, 0.173, 0.231)
     if imgSelected then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.draw(imgSelected, xPos + widthItem + 1, yPos, 0, 0.8, 0.8, 0 , 0)
+        love.graphics.draw(imgSelected, xPos + widthItem + 1, yPos, 0, imgSelectedScale.scaleW, imgSelectedScale.scaleH, 0 , 0)
     else
         love.graphics.rectangle("fill", xPos + widthItem + 1, yPos, widthImgMain, heightImgMain)
     end
@@ -187,6 +194,36 @@ function GuideUI()
     Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 80, "[B] : Space")
     Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 100, "[Start]: Search")
     Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "[Start + Select] : Exit")
+end
+
+function LoadImgData()
+    for _,item in pairs(searchData) do
+        local uChn = Thread.GetDownloadUrlChannel()
+        uChn:push(
+        {
+            id = item.id,
+            url = item.thumbnail.url,
+            width = item.thumbnail.width,
+            height = item.thumbnail.height,
+            type = "thumbnail"
+        })
+        
+        uChn:push(
+        {
+            id = item.id,
+            url = item.thumbnailMed.url,
+            width = item.thumbnailMed.width,
+            height = item.thumbnailMed.height,
+            type = "thumbnailMed"
+        })
+    end
+end
+
+function ScaleFactorImg(imgW, imgH, eW, eH)
+    return {
+        scaleW = eW / imgW,
+        scaleH = eH / imgH
+    }
 end
 
 function love.gamepadpressed(joystick, button)
@@ -245,14 +282,6 @@ function OnKeyboarCallBack(value)
     end
 end
 
-function SearchData()
-    for _,item in pairs(searchData) do
-        local uChn = Thread.GetDownloadUrlChannel()
-        uChn:push({id = item.id, url = item.thumbnail, type = "thumbnail"})
-        uChn:push({id = item.id, url = item.thumbnailMed, type = "thumbnailMed"})
-    end
-end
-
 function OnKeyPress(key)
     if isLoading then return end
 
@@ -261,17 +290,14 @@ function OnKeyPress(key)
     end
 
     if (key == "start" or key == "s") and #keyboardText > 0 then
-        if not hasAPIKEY then return end
-        searchData = CT.Search(keyboardText)
-        SearchData()
+        isLoading = true
+        CT.Search(keyboardText)
     end
 
     if key == "a" then
         if table.getn(searchData) >= cIdx  then
-            local id = searchData[cIdx].id
-            local url = string.format("https://www.youtube.com/watch?v=%s", id)
             isLoading = true
-            CT.Play(url)
+            CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
         end
     end
 

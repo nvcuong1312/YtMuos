@@ -7,15 +7,80 @@ local CT = {}
 
 local API_KEY = ""
 
-function CT.LoadOldData()
+-- 1: crawl
+-- 2: v3
+local searchType = "1"
+
+function CT.LoadSearchType()
+    local typeFile = io.open(Config.SEARCH_TYPE, "r")
+    if typeFile then
+        searchType = typeFile:read("*all")
+    else
+        searchType = "2"
+    end
+end
+
+function CT.LoadSearchData()
+    local resultData = {}
+
+    if searchType == "1" then
+        local file = io.open(Config.SEARCH_RESUTL_CR_JSON, "r")
+        if not file then
+            return resultData
+        end
+
+        local dataResultJs = file:read("*all")
+        file:close()
+
+        local rsObj = json.decode(dataResultJs)
+        if   rsObj.contents ~= nil
+         and rsObj.contents.twoColumnSearchResultsRenderer ~= nil
+         and rsObj.contents.twoColumnSearchResultsRenderer.primaryContents ~= nil
+         and rsObj.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer ~= nil
+         and rsObj.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents ~= nil
+        then
+            local contents = rsObj.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents
+            if table.getn(contents) > 0 then
+                for _, itemContent in pairs(contents) do
+                    if   itemContent.itemSectionRenderer ~= nil
+                     and itemContent.itemSectionRenderer.contents ~= nil
+                    then
+                        local items = itemContent.itemSectionRenderer.contents
+                        if items ~= nil and table.getn(items) > 0 then
+                            for _, item in pairs(items) do
+                                if item.videoRenderer then
+                                    table.insert(resultData,
+                                    {
+                                        id = item.videoRenderer.videoId,
+                                        time = item.videoRenderer.publishedTimeText.simpleText,
+                                        title = item.videoRenderer.title.runs[1].text,
+                                        description = "",
+                                        thumbnail = item.videoRenderer.thumbnail.thumbnails[1],
+                                        thumbnailMed = item.videoRenderer.thumbnail.thumbnails[2],
+                                        channelTitle = item.videoRenderer.ownerText.runs[1].text
+                                    })
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        return resultData
+    end
+
     local file = io.open(Config.SEARCH_RESUTL_JSON, "r")
+
+    if not file then
+        return resultData
+    end
+
     local dataResultJs = file:read("*all")
     file:close()
-
     local rsObj = json.decode(dataResultJs)
     local items = rsObj.items
 
-    local resultData = {}
     if items ~= nil and table.getn(items) > 0 then
         for idx, item in pairs(items) do
             table.insert(
@@ -28,7 +93,7 @@ function CT.LoadOldData()
                     thumbnail = item.snippet.thumbnails.default.url,
                     thumbnailMed = item.snippet.thumbnails.medium.url,
                     channelTitle = item.snippet.channelTitle
-                 })
+                })
         end
     end
 
@@ -43,14 +108,14 @@ function CT.LoadAPIKEY()
     return API_KEY
 end
 
-function CT.Search(searchKey)
-    if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") ~= "1" then
-        local searchCmd = string.format(Config.SEARCH_URL, searchKey, Config.SEARCH_MAX_RESULT, API_KEY)
-        local command = "wget \"" .. searchCmd .."\" -O " .. Config.SEARCH_RESUTL_JSON
-        os.execute(command)
-    end
+function CT.Search(search)
+    -- if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") ~= "1" then
+    --     local searchCmd = string.format(Config.SEARCH_URL, searchKey, Config.SEARCH_MAX_RESULT, API_KEY)
+    --     local command = "wget \"" .. searchCmd .."\" -O " .. Config.SEARCH_RESUTL_JSON
+    --     os.execute(command)
+    -- end
 
-    return CT.LoadOldData()
+    Thread.GetSearchVideoKeywordChannel():push({type = searchType, search = search, key = API_KEY})
 end
 
 function CT.GenerateMediaFile(url)
