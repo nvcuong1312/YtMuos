@@ -40,6 +40,12 @@ if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 
 	echo "$APIKEY" > "mnt/mmc/MUOS/application/.ctupe/data/API"
 	
+	if [ -e "mnt/mmc/MUOS/task/CTupeLoader.sh" ]; then
+		rm -r "mnt/mmc/MUOS/task/CTupeLoader.sh"
+	fi
+	
+	cp "CTupeData/UnzipData/YtMuos-dev/CTupeLoader.sh" "mnt/mmc/MUOS/task/CTupeLoader.sh"
+	
 	echo "Done!"
 else
 	echo "Error!"
