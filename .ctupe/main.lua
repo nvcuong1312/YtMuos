@@ -65,6 +65,8 @@ function love.update(dt)
         searchData = CT.LoadSearchData()
         LoadImgData()
         isLoading = false
+        cPage = 1
+        cIdx = 1
     end
 
     local playDone = Thread.GetPlayDone():pop()
