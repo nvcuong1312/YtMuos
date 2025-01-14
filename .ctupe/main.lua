@@ -65,7 +65,11 @@ end
 function love.update(dt)
     local imgDownloaded = Thread.GetDownloadResutlChannel():pop()
     if imgDownloaded then
-        table.insert(imgDataList, imgDownloaded)
+        if isShowOnlineList then
+            table.insert(imgDataList, imgDownloaded)
+        else
+            table.insert(imgDownloadedDataList, imgDownloaded)
+        end
     end
 
     local searchResult = Thread.GetSearchVideoResultChannel():pop()
@@ -251,25 +255,30 @@ function GuideUI()
 end
 
 function LoadImgData()
-    for _,item in pairs(searchData) do
-        local uChn = Thread.GetDownloadUrlChannel()
-        uChn:push(
-        {
-            id = item.id,
-            url = item.thumbnail.url,
-            width = item.thumbnail.width,
-            height = item.thumbnail.height,
-            type = "thumbnail"
-        })
-
-        -- uChn:push(
-        -- {
-        --     id = item.id,
-        --     url = item.thumbnailMed.url,
-        --     width = item.thumbnailMed.width,
-        --     height = item.thumbnailMed.height,
-        --     type = "thumbnailMed"
-        -- })
+    if isShowOnlineList then
+        for _,item in pairs(searchData) do
+            local uChn = Thread.GetDownloadUrlChannel()
+            uChn:push(
+            {
+                id = item.id,
+                url = item.thumbnail.url,
+                width = item.thumbnail.width,
+                height = item.thumbnail.height,
+                type = "thumbnail"
+            })
+        end
+    else
+        for _,item in pairs(downloadedData) do
+            local uChn = Thread.GetDownloadUrlChannel()
+            uChn:push(
+            {
+                id = item.id,
+                url = item.thumbnail.url,
+                width = item.thumbnail.width,
+                height = item.thumbnail.height,
+                type = "thumbnail"
+            })
+        end
     end
 end
 
@@ -399,7 +408,8 @@ end
 function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
     if not isShowOnlineList then
-        CT.LoadDataFromSavePath()
+        downloadedData = CT.LoadDataFromSavePath()
+        LoadImgData()
     end
 end
 

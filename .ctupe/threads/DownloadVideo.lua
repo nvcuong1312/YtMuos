@@ -4,13 +4,15 @@ local json = require("json")
 
 -- baseSavePath
 -- data
-    -- id = item.videoRenderer.videoId,
-    -- time = time,
-    -- title = title,
-    -- description = "",
-    -- thumbnail = thumbnail,
-    -- channelTitle = channelTitle
---CT.GenerateMediaFile(string.format(Config.YT_PLAY_URL, searchData[cIdx].id), searchData[cIdx].id, searchData[cIdx].thumbnail)
+    -- id
+    -- time
+    -- title
+    -- description
+    -- thumbnail
+      -- url
+      -- width
+      -- height
+    -- channelTitle
 local uChn = Thread.GetDownloadVideoUrlChannel()
 
 -- true/false
@@ -37,12 +39,13 @@ while true do
         local dirPath = uObj.baseSavePath .. "/" .. uObj.data.id
         local dataPath = dirPath .. Config.SAVE_MEDIA_PATH
         local infoPath = dirPath .. Config.SAVE_INFO_PATH
+        local thumbPath = dirPath .. Config.SAVE_THUMBNAIL_PATH
 
         os.execute("mkdir -p " .. dirPath)
 
-        local command = "youtube-dl -S \"res:640\" -o - \"" .. url .."\" > " .. dataPath
+        os.execute("wget \"".. uObj.data.thumbnail.url .."\" -O " .. thumbPath)
 
-        print(command)
+        local command = "youtube-dl -S \"res:640\" -o - \"" .. url .."\" > " .. dataPath
         os.execute(command)
 
         local jsonData = json.encode(uObj.data)

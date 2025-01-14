@@ -22,6 +22,12 @@ function CT.LoadSavePath()
     end
 end
 
+function file_exists_cmd(path)
+    local command = 'dir "' .. path .. '" >nul 2>&1'
+    local result = os.execute(command)
+    return result == 0
+end
+
 function CT.LoadDataFromSavePath()
     local resultData = {}
 
@@ -33,8 +39,18 @@ function CT.LoadDataFromSavePath()
     end
 
     for fileId in handle:lines() do
-        local mediaPath = baseSavePath .. "/" .. fileId .. Config.SAVE_MEDIA_PATH
-        local infoPath = baseSavePath .. "/" .. fileId .. Config.SAVE_INFO_PATH
+        local mediaPath = baseSavePath .. Config.PATH_SEPARATOR .. fileId .. Config.SAVE_MEDIA_PATH
+        local infoPath = baseSavePath .. Config.PATH_SEPARATOR .. fileId .. Config.SAVE_INFO_PATH
+        if file_exists_cmd(mediaPath) and file_exists_cmd(infoPath) then
+            local dtInfo = io.open(infoPath, "r")
+            if dtInfo then
+                local dataInfoJson = json.decode(dtInfo:read("*all"))
+                dtInfo:close()
+
+                dataInfoJson.mediaPath = mediaPath
+                table.insert(resultData, dataInfoJson)
+            end
+         end
     end
 
     handle:close()

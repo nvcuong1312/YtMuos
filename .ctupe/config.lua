@@ -4,12 +4,15 @@ Config.GRID_PAGE_ITEM = 5
 Config.MPV_PATH = "/opt/muos/script/launch/ext-mpv-ctupe.sh"
 Config.API_KEY_PATH = "data/api"
 
+Config.PATH_SEPARATOR  = package.config:sub(1, 1)
+
 Config.SEARCH_RESUTL_JSON = "data/result.json"
 Config.SEARCH_RESUTL_CR_JSON = "data/result_cr.json"
 Config.SEARCH_TYPE = "data/TYPE"
 Config.SAVE_PATH = "data/SAVEPATH"
-Config.SAVE_MEDIA_PATH = "/MediaData"
-Config.SAVE_INFO_PATH = "/InfoData"
+Config.SAVE_MEDIA_PATH = Config.PATH_SEPARATOR .."MediaData"
+Config.SAVE_INFO_PATH = Config.PATH_SEPARATOR .. "InfoData"
+Config.SAVE_THUMBNAIL_PATH = Config.PATH_SEPARATOR .. "Thumbnail.jpg"
 
 Config.FONT_PATH = "Assets/Font/Font.ttf"
 
