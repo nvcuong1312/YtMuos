@@ -408,7 +408,9 @@ end
 function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
     if not isShowOnlineList then
-        downloadedData = CT.LoadDataFromSavePath()
+        downloadedData = CT.LoadDataFromSavePath(function(id)
+            msg = id
+        end)
         LoadImgData()
     end
 end
