@@ -354,7 +354,7 @@ function OnKeyPress(key)
     if key == "x" then
         if table.getn(searchData) >= cIdx  then
             isLoading = true
-            CT.GenerateMediaFile(string.format(Config.YT_PLAY_URL, searchData[cIdx].id), searchData[cIdx].id, searchData[cIdx].thumbnail)
+            CT.GenerateMediaFile(searchData[cIdx])
         end
     end
 

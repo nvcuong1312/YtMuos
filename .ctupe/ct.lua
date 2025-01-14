@@ -154,8 +154,8 @@ function CT.Search(search)
     Thread.GetSearchVideoKeywordChannel():push({type = searchType, search = search, key = API_KEY})
 end
 
-function CT.GenerateMediaFile(url, id, thumbnail)
-    Thread.GetDownloadVideoUrlChannel():push({baseSavePath = baseSavePath, url = url, id = id, thumbnail = thumbnail})
+function CT.GenerateMediaFile(vData)
+    Thread.GetDownloadVideoUrlChannel():push({baseSavePath = baseSavePath, data = vData})
 end
 
 function CT.Play(url)
