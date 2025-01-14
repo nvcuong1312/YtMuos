@@ -22,6 +22,14 @@ function CT.LoadSavePath()
     end
 end
 
+function CT.LoadDataFromSavePath()
+    -- local handle = io.popen("dir /b " .. baseSavePath)
+    -- local results = handle:lines()
+    -- handle:close()
+
+    -- print(results[1])
+end
+
 function CT.LoadSearchType()
     local typeFile = io.open(Config.SEARCH_TYPE, "r")
     if typeFile then

@@ -12,10 +12,17 @@ local Icon = require("icon")
 local msg = "DEVELOPMENT STAGE"
 local hasAPIKEY = false
 
+local isShowOnlineList = true
+
 local searchData = {}
 local imgDataList = {}
 local cPage = 1
 local cIdx = 1
+
+local downloadedData = {}
+local imgDownloadedDataList = {}
+local cDownloadedPage = 1
+local cDownloadedIdx = 1
 
 local isKeyboarFocus = false
 local keyboardText = ""
@@ -41,8 +48,8 @@ function love.draw()
     love.graphics.setBackgroundColor(Color.BG)
     HeaderUI()
     BodyUI()
-    BottomUI()
     GuideUI()
+    BottomUI()
 
     love.graphics.setFont(Font.Small())
 
@@ -106,6 +113,14 @@ function HeaderUI()
 end
 
 function BodyUI()
+    if isShowOnlineList then
+        RenderBodyList(searchData, cPage, cIdx, imgDataList)
+    else
+        RenderBodyList(downloadedData, cDownloadedPage, cDownloadedIdx, imgDownloadedDataList)
+    end
+end
+
+function RenderBodyList(datas, page, idx, imgs)
     local xPos = 0
     local yPos = 30
     local widthItem = 400
@@ -116,9 +131,9 @@ function BodyUI()
     local widthImgMain = 239
     local heightImgMain = 145
 
-    local total = table.getn(searchData)
-    local idxStart = cPage * Config.GRID_PAGE_ITEM - Config.GRID_PAGE_ITEM + 1
-    local idxEnd = cPage * Config.GRID_PAGE_ITEM
+    local total = table.getn(datas)
+    local idxStart = page * Config.GRID_PAGE_ITEM - Config.GRID_PAGE_ITEM + 1
+    local idxEnd = page * Config.GRID_PAGE_ITEM
     local iPos = 0
 
     local imgSelected = nil
@@ -131,9 +146,9 @@ function BodyUI()
         love.graphics.setColor(Color.BODY_ITEM_BG)
         love.graphics.rectangle("fill", xPos, yPos + h , widthItem, heightItem)
 
-        for _,imgData in pairs(imgDataList) do
+        for _,imgData in pairs(imgs) do
             pcall(function ()
-                if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
+                if imgData.id == datas[i].id and imgData.type == "thumbnail" then
                     local img = love.graphics.newImage(imgData.imgData)
                     love.graphics.setColor(Color.WHITE)
                     local scale = ScaleFactorImg(img:getWidth(), img:getHeight(), widthImgItem, heigthImgItem)
@@ -141,7 +156,7 @@ function BodyUI()
                 end
 
                 if cIdx == iPos + 1 then
-                    if imgData.id == searchData[i].id and imgData.type == "thumbnail" then
+                    if imgData.id == datas[i].id and imgData.type == "thumbnail" then
                         imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
                         imgSelected = love.graphics.newImage(imgData.imgData)
                     end
@@ -151,14 +166,14 @@ function BodyUI()
 
         love.graphics.setColor(Color.BODY_TITLE_ITEM)
         love.graphics.setFont(Font.Normal())
-        love.graphics.printf(searchData[i].title, xPos + widthImgItem + 1, yPos + h, 320)
+        love.graphics.printf(datas[i].title, xPos + widthImgItem + 1, yPos + h, 320)
 
         love.graphics.setColor(Color.BODY_CHANNEL_ITEM)
         love.graphics.setFont(Font.Small())
-        love.graphics.print(searchData[i].channelTitle, xPos, yPos + h + 63)
-        love.graphics.print(searchData[i].time, xPos + widthImgItem + 240, yPos + h + 63)
+        love.graphics.print(datas[i].channelTitle, xPos, yPos + h + 63)
+        love.graphics.print(datas[i].time, xPos + widthImgItem + 240, yPos + h + 63)
 
-        if cIdx == iPos + 1 then
+        if idx == iPos + 1 then
             love.graphics.setColor(Color.BODY_ITEM_SEL_BG)
             love.graphics.rectangle("fill", xPos, yPos + h, widthItem, heightItem, 4)
         end
@@ -222,6 +237,9 @@ function GuideUI()
     else
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 20, "       Play")
         love.graphics.draw(Icon.A , xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
+
+        Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Offline List")
+        love.graphics.draw(Icon.Select, xPos + 5, yPos + heightTextBlock + 48, 0, 0.4)
 
         Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Download")
         love.graphics.draw(Icon.X , xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
@@ -330,9 +348,6 @@ function OnKeyPress(key)
         CT.Search(keyboardText)
     end
 
-    if key == "select" then
-    end
-
     if key == "x" then
         if #keyboardText > 0 then
             keyboardText = string.sub(keyboardText, 1, #keyboardText - 1)
@@ -342,6 +357,10 @@ function OnKeyPress(key)
     if isKeyboarFocus then
         Keyboard.keypressed(key, OnKeyboarCallBack)
         return
+    end
+
+    if key == "select" or key == "t" then
+        ChangeOfflineMode()
     end
 
     if key == "a" then
@@ -375,7 +394,14 @@ function OnKeyPress(key)
             end)
         end
     end
- end
+end
+
+function ChangeOfflineMode()
+    isShowOnlineList = not isShowOnlineList
+    if not isShowOnlineList then
+        CT.LoadDataFromSavePath()
+    end
+end
 
  function GridKeyUp(list,currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
     local total = table.getn(list)
