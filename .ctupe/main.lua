@@ -29,12 +29,14 @@ local keyboardText = ""
 
 local isLoading = false
 
+local baseSavePath = ""
+
 function love.load()
     Font.Load()
     Keyboard:create()
     Thread.Create()
 
-    CT.LoadSavePath()
+    baseSavePath = CT.LoadSavePath()
     CT.LoadSearchType()
     CT.LoadAPIKEY()
 
@@ -65,7 +67,7 @@ end
 function love.update(dt)
     local imgDownloaded = Thread.GetDownloadResutlChannel():pop()
     if imgDownloaded then
-        if isShowOnlineList then
+        if imgDownloaded.type == "online" then
             table.insert(imgDataList, imgDownloaded)
         else
             table.insert(imgDownloadedDataList, imgDownloaded)
@@ -152,7 +154,7 @@ function RenderBodyList(datas, page, idx, imgs)
 
         for _,imgData in pairs(imgs) do
             pcall(function ()
-                if imgData.id == datas[i].id and imgData.type == "thumbnail" then
+                if imgData.id == datas[i].id then
                     local img = love.graphics.newImage(imgData.imgData)
                     love.graphics.setColor(Color.WHITE)
                     local scale = ScaleFactorImg(img:getWidth(), img:getHeight(), widthImgItem, heigthImgItem)
@@ -160,7 +162,7 @@ function RenderBodyList(datas, page, idx, imgs)
                 end
 
                 if cIdx == iPos + 1 then
-                    if imgData.id == datas[i].id and imgData.type == "thumbnail" then
+                    if imgData.id == datas[i].id then
                         imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
                         imgSelected = love.graphics.newImage(imgData.imgData)
                     end
@@ -264,7 +266,7 @@ function LoadImgData()
                 url = item.thumbnail.url,
                 width = item.thumbnail.width,
                 height = item.thumbnail.height,
-                type = "thumbnail"
+                type = "online"
             })
         end
     else
@@ -276,7 +278,8 @@ function LoadImgData()
                 url = item.thumbnail.url,
                 width = item.thumbnail.width,
                 height = item.thumbnail.height,
-                type = "thumbnail"
+                type = "offline",
+                basePath = baseSavePath
             })
         end
     end
@@ -408,9 +411,7 @@ end
 function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
     if not isShowOnlineList then
-        downloadedData = CT.LoadDataFromSavePath(function(id)
-            msg = id
-        end)
+        downloadedData = CT.LoadDataFromSavePath()
         LoadImgData()
     end
 end

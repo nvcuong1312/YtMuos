@@ -18,17 +18,25 @@ function CT.LoadSavePath()
     if savePath then
         baseSavePath = savePath:read("*all")
     else
-        baseSavePath = "2"
+        baseSavePath = "/mnt/mmc/ctupedownloaddata/"
     end
+
+    return baseSavePath
 end
 
 function file_exists_cmd(path)
-    local command = 'dir "' .. path .. '" >nul 2>&1'
-    local result = os.execute(command)
-    return result == 0
+    if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") ~= "1" then
+        local command = '[ -f "' .. path .. '" ]'
+        local result = os.execute(command)
+        return result == 0
+    else
+        local command = 'dir "' .. path .. '" >nul 2>&1'
+        local result = os.execute(command)
+        return result == 0
+    end
 end
 
-function CT.LoadDataFromSavePath(callBack)
+function CT.LoadDataFromSavePath()
     local resultData = {}
 
     local handle = nil
@@ -39,7 +47,6 @@ function CT.LoadDataFromSavePath(callBack)
     end
 
     for fileId in handle:lines() do
-        callBack(fileId)
         local mediaPath = baseSavePath .. Config.PATH_SEPARATOR .. fileId .. Config.SAVE_MEDIA_PATH
         local infoPath = baseSavePath .. Config.PATH_SEPARATOR .. fileId .. Config.SAVE_INFO_PATH
         if file_exists_cmd(mediaPath) and file_exists_cmd(infoPath) then
@@ -51,7 +58,7 @@ function CT.LoadDataFromSavePath(callBack)
                 dataInfoJson.mediaPath = mediaPath
                 table.insert(resultData, dataInfoJson)
             end
-         end
+        end
     end
 
     handle:close()
