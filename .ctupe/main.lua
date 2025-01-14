@@ -27,6 +27,7 @@ function love.load()
     Keyboard:create()
     Thread.Create()
 
+    CT.LoadSavePath()
     CT.LoadSearchType()
     CT.LoadAPIKEY()
 
@@ -67,6 +68,11 @@ function love.update(dt)
         isLoading = false
         cPage = 1
         cIdx = 1
+    end
+
+    local videoDownloaded = Thread.GetDownloadVideoResultChannel():pop()
+    if videoDownloaded then
+        isLoading = false
     end
 
     local playDone = Thread.GetPlayDone():pop()
@@ -216,6 +222,9 @@ function GuideUI()
     else
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 20, "       Play")
         love.graphics.draw(Icon.A , xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
+
+        Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Download")
+        love.graphics.draw(Icon.X , xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
     end
 
     Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "                     Exit")
@@ -339,6 +348,13 @@ function OnKeyPress(key)
         if table.getn(searchData) >= cIdx  then
             isLoading = true
             CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
+        end
+    end
+
+    if key == "x" then
+        if table.getn(searchData) >= cIdx  then
+            isLoading = true
+            CT.GenerateMediaFile(string.format(Config.YT_PLAY_URL, searchData[cIdx].id), searchData[cIdx].id, searchData[cIdx].thumbnail)
         end
     end
 

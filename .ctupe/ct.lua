@@ -11,6 +11,17 @@ local API_KEY = ""
 -- 2: v3
 local searchType = "1"
 
+local baseSavePath = ""
+
+function CT.LoadSavePath()
+    local savePath = io.open(Config.SAVE_PATH, "r")
+    if savePath then
+        baseSavePath = savePath:read("*all")
+    else
+        baseSavePath = "2"
+    end
+end
+
 function CT.LoadSearchType()
     local typeFile = io.open(Config.SEARCH_TYPE, "r")
     if typeFile then
@@ -143,9 +154,8 @@ function CT.Search(search)
     Thread.GetSearchVideoKeywordChannel():push({type = searchType, search = search, key = API_KEY})
 end
 
-function CT.GenerateMediaFile(url)
-    local command = "youtube-dl -f \"bestvideo[width<=640][height<=480]+bestaudio\" -o - \"" .. url .."\" > " .. Config.MEDIA_PATH
-    os.execute(command)
+function CT.GenerateMediaFile(url, id, thumbnail)
+    Thread.GetDownloadVideoUrlChannel():push({baseSavePath = baseSavePath, url = url, id = id, thumbnail = thumbnail})
 end
 
 function CT.Play(url)

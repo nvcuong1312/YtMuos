@@ -6,6 +6,7 @@ function Thread.Create()
     love.thread.newThread("threads/ImgDownload.lua"):start()
     love.thread.newThread("threads/PlayVideo.lua"):start()
     love.thread.newThread("threads/SearchVideo.lua"):start()
+    love.thread.newThread("threads/DownloadVideo.lua"):start()
 end
 
 function Thread.GetDownloadResutlChannel()
@@ -30,6 +31,14 @@ end
 
 function Thread.GetSearchVideoResultChannel()
     return love.thread.getChannel("search_result")
+end
+
+function Thread.GetDownloadVideoUrlChannel()
+    return love.thread.getChannel("download_video_url")
+end
+
+function Thread.GetDownloadVideoResultChannel()
+    return love.thread.getChannel("download_video_result")
 end
 
 return Thread
