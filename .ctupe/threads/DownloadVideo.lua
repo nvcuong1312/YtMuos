@@ -40,7 +40,9 @@ while true do
 
         os.execute("mkdir -p " .. dirPath)
 
-        local command = "youtube-dl -f \"bestvideo[width<=640][height<=480]+bestaudio\" -o - \"" .. url .."\" > " .. dataPath
+        local command = "youtube-dl -S \"res:640\" -o - \"" .. url .."\" > " .. dataPath
+
+        print(command)
         os.execute(command)
 
         local jsonData = json.encode(uObj.data)
