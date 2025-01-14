@@ -35,8 +35,8 @@ while true do
         local url = string.format(Config.YT_PLAY_URL, uObj.data.id)
 
         local dirPath = uObj.baseSavePath .. "/" .. uObj.data.id
-        local dataPath = dirPath .. "/MediaData"
-        local infoPath = dirPath .. "/InfoData"
+        local dataPath = dirPath .. Config.SAVE_MEDIA_PATH
+        local infoPath = dirPath .. Config.SAVE_INFO_PATH
 
         os.execute("mkdir -p " .. dirPath)
 

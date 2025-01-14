@@ -23,11 +23,23 @@ function CT.LoadSavePath()
 end
 
 function CT.LoadDataFromSavePath()
-    -- local handle = io.popen("dir /b " .. baseSavePath)
-    -- local results = handle:lines()
-    -- handle:close()
+    local resultData = {}
 
-    -- print(results[1])
+    local handle = nil
+    if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") ~= "1" then
+        handle = io.popen("ls -1 " .. baseSavePath)
+    else
+        handle = io.popen("dir /b " .. baseSavePath)
+    end
+
+    for fileId in handle:lines() do
+        local mediaPath = baseSavePath .. "/" .. fileId .. Config.SAVE_MEDIA_PATH
+        local infoPath = baseSavePath .. "/" .. fileId .. Config.SAVE_INFO_PATH
+    end
+
+    handle:close()
+
+    return resultData
 end
 
 function CT.LoadSearchType()
