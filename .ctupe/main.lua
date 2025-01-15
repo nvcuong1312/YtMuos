@@ -47,21 +47,24 @@ function love.load()
 end
 
 function love.draw()
-    love.graphics.setBackgroundColor(Color.BG)
-    HeaderUI()
-    BodyUI()
-    GuideUI()
-    BottomUI()
+    pcall(function ()
+        love.graphics.setBackgroundColor(Color.BG)
 
-    love.graphics.setFont(Font.Small())
+        if not isLoading then
+            HeaderUI()
+            BodyUI()
+            GuideUI()
+            BottomUI()
+        end
 
-    Keyboard:draw(isKeyboarFocus)
+        love.graphics.setFont(Font.Small())
 
-    if isLoading then
-        Loading.Draw()
-    end
+        Keyboard:draw(isKeyboarFocus)
 
-    if not hasAPIKEY then return end
+        if isLoading then
+            Loading.Draw()
+        end
+    end)
 end
 
 function love.update(dt)
@@ -77,7 +80,6 @@ function love.update(dt)
 
     local searchResult = Thread.GetSearchVideoResultChannel():pop()
     if searchResult then
-        imgDataList = {}
         searchData = CT.LoadSearchData()
         LoadImgData()
         isLoading = false
@@ -259,6 +261,7 @@ function GuideUI()
 end
 
 function LoadImgData()
+    imgDataList = {}
     for _,item in pairs(searchData) do
         local uChn = Thread.GetDownloadUrlChannel()
         uChn:push(
@@ -273,6 +276,7 @@ function LoadImgData()
 end
 
 function LoadOfflineImgData()
+    imgDownloadedDataList = {}
     for _,item in pairs(downloadedData) do
         local uChn = Thread.GetOfflineUrlChannel()
         uChn:push(
@@ -427,15 +431,8 @@ end
 
 function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
-    searchData = {}
-    downloadedData = {}
-    imgDownloadedDataList = {}
-    imgDataList = {}
 
-    if isShowOnlineList then
-        searchData = CT.LoadSearchData()
-        LoadImgData()
-    else
+    if not isShowOnlineList then
         downloadedData = CT.LoadDataFromSavePath()
         LoadOfflineImgData()
     end
