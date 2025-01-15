@@ -376,12 +376,15 @@ function OnKeyPress(key)
     end
 
     if key == "a" then
-        if table.getn(searchData) >= cIdx  then
-            isLoading = true
-            if isShowOnlineList then
+        if isShowOnlineList then
+            if table.getn(searchData) >= cIdx  then
+                isLoading = true
                 CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
-            else
-                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. searchData[cIdx].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
+            end
+        else
+            if table.getn(downloadedData) >= cIdx  then
+                isLoading = true
+                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[cIdx].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
             end
         end
     end
