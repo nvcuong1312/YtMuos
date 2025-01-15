@@ -55,11 +55,8 @@ function love.draw()
             BodyUI()
             GuideUI()
             BottomUI()
+            Keyboard:draw(isKeyboarFocus)
         end
-
-        love.graphics.setFont(Font.Small())
-
-        Keyboard:draw(isKeyboarFocus)
 
         if isLoading then
             Loading.Draw()
