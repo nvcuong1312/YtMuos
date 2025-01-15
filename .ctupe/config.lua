@@ -81,7 +81,7 @@ export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 SET_VAR "system" "foreground_process" "mpv"
 
 $GPTOKEYB "mpv" -c "$APP_DIR/general.gptk" &
-youtube-dl "$URL" | xargs mpv
+/usr/bin/mpv "$URL"
 
 kill -9 "$(pidof gptokeyb2)"
 

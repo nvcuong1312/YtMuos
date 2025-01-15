@@ -203,7 +203,11 @@ function CT.GenerateMediaFile(vData)
 end
 
 function CT.Play(url)
-    Thread.GetPlayUrl():push(url)
+    Thread.GetPlayUrl():push({url = url, isOnline = true})
+end
+
+function CT.PlayOffline(url)
+    Thread.GetPlayUrl():push({url = url, isOnline = false})
 end
 
 return CT
