@@ -77,6 +77,7 @@ function love.update(dt)
 
     local searchResult = Thread.GetSearchVideoResultChannel():pop()
     if searchResult then
+        imgDataList = {}
         searchData = CT.LoadSearchData()
         LoadImgData()
         isLoading = false
@@ -427,6 +428,7 @@ end
 function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
     if not isShowOnlineList then
+        imgDownloadedDataList = {}
         downloadedData = CT.LoadDataFromSavePath()
         LoadOfflineImgData()
     end
