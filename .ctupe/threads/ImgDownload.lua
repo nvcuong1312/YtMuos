@@ -38,15 +38,22 @@ while true do
             end
         else
             local pathImg = uObj.basePath .. "/" .. uObj.id .. "/" .. Config.SAVE_THUMBNAIL_PATH
-            local file_data = love.filesystem.newFileData(pathImg, '' ,'file')
-            rsChn:push(
-            {
-                id = uObj.id,
-                imgData = file_data,
-                width = width,
-                height = height,
-                type = uObj.type
-            })
+            local file = io.open(pathImg, "rb")
+            if file then
+                local data = file:read("*all")
+                file:close()
+                local file_data = love.image.newImageData(love.filesystem.newFileData(data, "image.png"))
+                rsChn:push(
+                {
+                    id = uObj.id,
+                    imgData = file_data,
+                    width = width,
+                    height = height,
+                    type = uObj.type
+                })
+            else
+                print("File not found: " .. pathImg)
+            end
         end
     end
 end
