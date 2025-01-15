@@ -32,6 +32,12 @@ if unzip -o "CTupeData/dev.zip" -d "CTupeData/UnzipData/"; then
 	fi
 
 	cp "CTupeData/UnzipData/YtMuos-dev/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png"
+	
+	if [ -e "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png" ]; then
+		rm -r "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
+	fi
+
+	cp "CTupeData/UnzipData/YtMuos-dev/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
 
 	APIKEY="YOUR_API_KEY_HERE"
 	if [ -e "mnt/mmc/MUOS/application/.ctupe/data/API" ]; then
