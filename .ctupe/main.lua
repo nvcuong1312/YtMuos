@@ -378,7 +378,11 @@ function OnKeyPress(key)
     if key == "a" then
         if table.getn(searchData) >= cIdx  then
             isLoading = true
-            CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
+            if isShowOnlineList then
+                CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
+            else
+                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. searchData[cIdx].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
+            end
         end
     end
 
@@ -418,7 +422,7 @@ end
 
  function GridKeyUp(list,currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
     local total = table.getn(list)
-    if total < 1 then return end
+    if total < 1 or total == 1 then return end
     local isMultiplePage = total > maxPageItem
     if isMultiplePage then
         local remainder = total % maxPageItem
@@ -457,7 +461,7 @@ end
 
 function GridKeyDown(list, currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
     local total = table.getn(list)
-    if total < 1 then return end
+    if total < 1 or total == 1 then return end
     local isMultiplePage = total > maxPageItem
     if isMultiplePage then
         local remainder = total % maxPageItem
