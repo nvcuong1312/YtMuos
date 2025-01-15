@@ -382,9 +382,9 @@ function OnKeyPress(key)
                 CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
             end
         else
-            if table.getn(downloadedData) >= cIdx  then
+            if table.getn(downloadedData) >= cDownloadedIdx  then
                 isLoading = true
-                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[cIdx].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
+                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[cDownloadedIdx].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
             end
         end
     end
