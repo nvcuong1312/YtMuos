@@ -102,6 +102,8 @@ function love.update(dt)
         isLoading = false
         downloadedData = CT.LoadDataFromSavePath()
         LoadOfflineImgData()
+        cDownloadedIdx = 1
+        cDownloadedPage = 1
     end
 
     if isLoading then
@@ -406,28 +408,32 @@ function OnKeyPress(key)
 
     if key == "a" then
         if isShowOnlineList then
-            if table.getn(searchData) >= cIdx  then
+            local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
+            if table.getn(searchData) >= pos  then
                 isLoading = true
-                CT.Play(string.format(Config.YT_PLAY_URL, searchData[cIdx].id))
+                CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id))
             end
         else
-            if table.getn(downloadedData) >= cDownloadedIdx  then
+            local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
+            if table.getn(downloadedData) >= pos  then
                 isLoading = true
-                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[cDownloadedIdx].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
+                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
             end
         end
     end
 
     if key == "x" then
         if isShowOnlineList then
-            if table.getn(searchData) >= cIdx  then
+            local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
+            if table.getn(searchData) >= pos  then
                 isLoading = true
-                CT.GenerateMediaFile(searchData[cIdx])
+                CT.GenerateMediaFile(searchData[pos])
             end
         else
-            if table.getn(downloadedData) >= cDownloadedIdx  then
+            local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
+            if table.getn(downloadedData) >= pos  then
                 isLoading = true
-                CT.DeleteMediaFile(downloadedData[cDownloadedIdx].id)
+                CT.DeleteMediaFile(downloadedData[pos].id)
             end
         end
     end
