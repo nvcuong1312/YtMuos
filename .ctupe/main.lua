@@ -72,7 +72,7 @@ function love.update(dt)
 
     local imgOffline = Thread.GetOfflineResutlChannel():pop()
     if imgOffline then
-        table.insert(imgDownloadedDataList, imgDownloaded)
+        table.insert(imgDownloadedDataList, imgOffline)
     end
 
     local searchResult = Thread.GetSearchVideoResultChannel():pop()
