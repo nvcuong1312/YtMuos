@@ -1,4 +1,5 @@
 #!/bin/bash
+# ICON: CTupe
 
 . /opt/muos/script/var/func.sh
 
