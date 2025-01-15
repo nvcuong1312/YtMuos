@@ -58,12 +58,7 @@ Config.PLAY_MPV_CMD =
 
 . /opt/muos/script/var/func.sh
 
-NAME=$1
-FILE=$2
-
-LOG_INFO "$0" 0 "Content Launch" "DETAIL"
-LOG_INFO "$0" 0 "NAME" "$NAME"
-LOG_INFO "$0" 0 "FILE" "$FILE"
+URL="%s"
 
 GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/emulator/gptokeyb/gptokeyb2"
 APP_DIR="/mnt/mmc/MUOS/application/.ctupe/data"

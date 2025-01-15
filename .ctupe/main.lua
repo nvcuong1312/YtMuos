@@ -161,7 +161,7 @@ function RenderBodyList(datas, page, idx, imgs)
                     love.graphics.draw(img, xPos, yPos + h, 0, scale.scaleW, scale.scaleH, 0 , 0)
                 end
 
-                if cIdx == iPos + 1 then
+                if idx == iPos + 1 then
                     if imgData.id == datas[i].id then
                         imgSelectedScale = ScaleFactorImg(imgData.width, imgData.height, widthImgMain, heightImgMain)
                         imgSelected = love.graphics.newImage(imgData.imgData)
