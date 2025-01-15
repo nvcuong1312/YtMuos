@@ -427,6 +427,8 @@ end
 
 function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
+    searchData = {}
+    downloadedData = {}
     imgDownloadedDataList = {}
     imgDataList = {}
 
