@@ -11,5 +11,6 @@ Icon.Select = love.graphics.newImage("Assets/Icon/ic_select.png")
 Icon.Start = love.graphics.newImage("Assets/Icon/ic_start.png")
 Icon.L1 = love.graphics.newImage("Assets/Icon/ic_l1.png")
 Icon.R1 = love.graphics.newImage("Assets/Icon/ic_r1.png")
+Icon.Thumbnail = love.graphics.newImage("Assets/Icon/ic_thumbnail.png")
 
 return Icon

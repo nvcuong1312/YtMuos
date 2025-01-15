@@ -202,6 +202,10 @@ function CT.GenerateMediaFile(vData)
     Thread.GetDownloadVideoUrlChannel():push({baseSavePath = baseSavePath, data = vData})
 end
 
+function CT.DeleteMediaFile(id)
+    Thread.GetDeleteVideoIdChannel():push({baseSavePath = baseSavePath, id = id})
+end
+
 function CT.Play(url)
     Thread.GetPlayUrl():push({url = url, isOnline = true})
 end

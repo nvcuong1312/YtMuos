@@ -8,6 +8,7 @@ function Thread.Create()
     love.thread.newThread("threads/PlayVideo.lua"):start()
     love.thread.newThread("threads/SearchVideo.lua"):start()
     love.thread.newThread("threads/DownloadVideo.lua"):start()
+    love.thread.newThread("threads/DeleteVideo.lua"):start()
 end
 
 function Thread.GetDownloadResutlChannel()
@@ -50,5 +51,12 @@ function Thread.GetDownloadVideoResultChannel()
     return love.thread.getChannel("download_video_result")
 end
 
+function Thread.GetDeleteVideoIdChannel()
+    return love.thread.getChannel("delete_video_id")
+end
+
+function Thread.GetDeleteVideoResultChannel()
+    return love.thread.getChannel("delete_video_result")
+end
 
 return Thread

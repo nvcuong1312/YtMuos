@@ -97,6 +97,13 @@ function love.update(dt)
         isLoading = false
     end
 
+    local deleteFile = Thread.GetDeleteVideoResultChannel():pop()
+    if deleteFile then
+        isLoading = false
+        downloadedData = CT.LoadDataFromSavePath()
+        LoadOfflineImgData()
+    end
+
     if isLoading then
         Loading.Update(dt)
     end
@@ -142,6 +149,13 @@ function RenderBodyList(datas, page, idx, imgs)
     local heightImgMain = 145
 
     local total = table.getn(datas)
+
+    if total == 0 then
+        love.graphics.setFont(Font.Big())
+        Text.DrawCenteredText(0, 210, 400, "Nothing...")
+        love.graphics.setFont(Font.Normal())
+    end
+
     local idxStart = page * Config.GRID_PAGE_ITEM - Config.GRID_PAGE_ITEM + 1
     local idxEnd = page * Config.GRID_PAGE_ITEM
     local iPos = 0
@@ -197,6 +211,8 @@ function RenderBodyList(datas, page, idx, imgs)
         love.graphics.draw(imgSelected, xPos + widthItem + 1, yPos, 0, imgSelectedScale.scaleW, imgSelectedScale.scaleH, 0 , 0)
     else
         love.graphics.rectangle("fill", xPos + widthItem + 1, yPos, widthImgMain, heightImgMain)
+        love.graphics.setColor(Color.WHITE)
+        love.graphics.draw(Icon.Thumbnail, xPos + widthItem + 1 + 105, yPos + 45, 0, 0.5, 0.5)
     end
 end
 
@@ -248,10 +264,18 @@ function GuideUI()
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 20, "       Play")
         love.graphics.draw(Icon.A , xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
 
-        Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Offline List")
+        if isShowOnlineList then
+            Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Offline List")
+        else
+            Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Online List")
+        end
         love.graphics.draw(Icon.Select, xPos + 5, yPos + heightTextBlock + 48, 0, 0.4)
 
-        Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Download")
+        if isShowOnlineList then
+            Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Download")
+        else
+            Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Delete")
+        end
         love.graphics.draw(Icon.X , xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
     end
 
@@ -348,7 +372,6 @@ function love.keypressed(key)
 end
 
 function OnKeyboarCallBack(value)
-    -- msg = value
     if #keyboardText < 30 then
         keyboardText = keyboardText .. value
     end
@@ -396,9 +419,16 @@ function OnKeyPress(key)
     end
 
     if key == "x" then
-        if table.getn(searchData) >= cIdx  then
-            isLoading = true
-            CT.GenerateMediaFile(searchData[cIdx])
+        if isShowOnlineList then
+            if table.getn(searchData) >= cIdx  then
+                isLoading = true
+                CT.GenerateMediaFile(searchData[cIdx])
+            end
+        else
+            if table.getn(downloadedData) >= cDownloadedIdx  then
+                isLoading = true
+                CT.DeleteMediaFile(downloadedData[cDownloadedIdx].id)
+            end
         end
     end
 
