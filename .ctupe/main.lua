@@ -398,19 +398,27 @@ function OnKeyPress(key)
 
     if table.getn(searchData) > 0 then
         if key == "up" then
-            GridKeyUp(searchData, cPage, cIdx, Config.GRID_PAGE_ITEM,
-            function(idx) cIdx = idx end,
-            function(page) cPage = page end)
+            if isShowOnlineList then
+                GridKeyUp(searchData, cPage, cIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cIdx = idx end,
+                function(page) cPage = page end)
+            else
+                GridKeyUp(downloadedData, cDownloadedPage, cDownloadedIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cDownloadedIdx = idx end,
+                function(page) cDownloadedPage = page end)
+            end
         end
 
         if key == "down" then
-            GridKeyDown(searchData, cPage, cIdx, Config.GRID_PAGE_ITEM,
-            function(idx)
-                cIdx = idx
-             end,
-            function(page)
-                cPage = page
-            end)
+            if isShowOnlineList then
+                GridKeyDown(searchData, cPage, cIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cIdx = idx end,
+                function(page) cPage = page end)
+            else
+                GridKeyDown(downloadedData, cDownloadedPage, cDownloadedIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cDownloadedIdx = idx end,
+                function(page) cDownloadedPage = page end)
+            end
         end
     end
 end
