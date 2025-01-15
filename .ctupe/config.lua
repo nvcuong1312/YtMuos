@@ -76,7 +76,7 @@ export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 SET_VAR "system" "foreground_process" "ffplay"
 
 $GPTOKEYB "ffplay" -c "$APP_DIR/general_ffplay.gptk" &
-/usr/bin/ffplay - -autoexit -loglevel quiet
+/usr/bin/ffplay "$URL" -autoexit -loglevel quiet
 
 kill -9 "$(pidof gptokeyb2)"
 
