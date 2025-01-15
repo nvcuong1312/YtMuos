@@ -42,7 +42,7 @@ while true do
             if file then
                 local data = file:read("*all")
                 file:close()
-                local file_data = love.image.newImageData(love.filesystem.newFileData(data, "image.png"))
+                local file_data = love.filesystem.newFileData(data, '' ,"file")
                 rsChn:push(
                 {
                     id = uObj.id,
