@@ -4,6 +4,7 @@ local Thread = {}
 
 function Thread.Create()
     love.thread.newThread("threads/ImgDownload.lua"):start()
+    love.thread.newThread("threads/ImgOffline.lua"):start()
     love.thread.newThread("threads/PlayVideo.lua"):start()
     love.thread.newThread("threads/SearchVideo.lua"):start()
     love.thread.newThread("threads/DownloadVideo.lua"):start()
@@ -15,6 +16,14 @@ end
 
 function Thread.GetDownloadUrlChannel()
     return love.thread.getChannel("download_url")
+end
+
+function Thread.GetOfflineResutlChannel()
+    return love.thread.getChannel("offline_result")
+end
+
+function Thread.GetOfflineUrlChannel()
+    return love.thread.getChannel("offline_url")
 end
 
 function Thread.GetPlayUrl()
@@ -40,5 +49,6 @@ end
 function Thread.GetDownloadVideoResultChannel()
     return love.thread.getChannel("download_video_result")
 end
+
 
 return Thread

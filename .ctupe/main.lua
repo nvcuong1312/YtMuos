@@ -67,11 +67,12 @@ end
 function love.update(dt)
     local imgDownloaded = Thread.GetDownloadResutlChannel():pop()
     if imgDownloaded then
-        if imgDownloaded.type == "online" then
-            table.insert(imgDataList, imgDownloaded)
-        else
-            table.insert(imgDownloadedDataList, imgDownloaded)
-        end
+        table.insert(imgDataList, imgDownloaded)
+    end
+
+    local imgOffline = Thread.GetOfflineResutlChannel():pop()
+    if imgOffline then
+        table.insert(imgDownloadedDataList, imgDownloaded)
     end
 
     local searchResult = Thread.GetSearchVideoResultChannel():pop()
@@ -257,31 +258,31 @@ function GuideUI()
 end
 
 function LoadImgData()
-    if isShowOnlineList then
-        for _,item in pairs(searchData) do
-            local uChn = Thread.GetDownloadUrlChannel()
-            uChn:push(
-            {
-                id = item.id,
-                url = item.thumbnail.url,
-                width = item.thumbnail.width,
-                height = item.thumbnail.height,
-                type = "online"
-            })
-        end
-    else
-        for _,item in pairs(downloadedData) do
-            local uChn = Thread.GetDownloadUrlChannel()
-            uChn:push(
-            {
-                id = item.id,
-                url = item.thumbnail.url,
-                width = item.thumbnail.width,
-                height = item.thumbnail.height,
-                type = "offline",
-                basePath = baseSavePath
-            })
-        end
+    for _,item in pairs(searchData) do
+        local uChn = Thread.GetDownloadUrlChannel()
+        uChn:push(
+        {
+            id = item.id,
+            url = item.thumbnail.url,
+            width = item.thumbnail.width,
+            height = item.thumbnail.height,
+            type = "online"
+        })
+    end
+end
+
+function LoadOfflineImgData()
+    for _,item in pairs(downloadedData) do
+        local uChn = Thread.GetOfflineUrlChannel()
+        uChn:push(
+        {
+            id = item.id,
+            url = item.thumbnail.url,
+            width = item.thumbnail.width,
+            height = item.thumbnail.height,
+            type = "offline",
+            basePath = baseSavePath
+        })
     end
 end
 
@@ -427,7 +428,7 @@ function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
     if not isShowOnlineList then
         downloadedData = CT.LoadDataFromSavePath()
-        LoadImgData()
+        LoadOfflineImgData()
     end
 end
 
