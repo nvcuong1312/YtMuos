@@ -14,7 +14,7 @@ while true do
             os.execute(command)
             dChn:push(true)
         else
-            local command = string.format(Config.PLAY_MPV_CMD, url)
+            local command = string.format(Config.PLAY_FFPLAY_OFFLINE_CMD, url)
             os.execute(command)
             dChn:push(true)
         end

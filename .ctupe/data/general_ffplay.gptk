@@ -4,8 +4,10 @@ a = p			# pause
 b = q           # quit
 x = m			# mute sound
 
-r1 = right
-
+left = left     #Seek backward 10 seconds.
+right = right   #Seek forward 10 seconds.
+up = up         #Seek forward 1 minute.
+down = down     #Seek backward 1 minute.
 
 #While playing
 #
