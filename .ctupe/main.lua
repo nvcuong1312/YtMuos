@@ -427,8 +427,13 @@ end
 
 function ChangeOfflineMode()
     isShowOnlineList = not isShowOnlineList
-    if not isShowOnlineList then
-        imgDownloadedDataList = {}
+    imgDownloadedDataList = {}
+    imgDataList = {}
+
+    if isShowOnlineList then
+        searchData = CT.LoadSearchData()
+        LoadImgData()
+    else
         downloadedData = CT.LoadDataFromSavePath()
         LoadOfflineImgData()
     end
