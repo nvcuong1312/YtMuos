@@ -385,6 +385,7 @@ function OnKeyPress(key)
 
     if (key == "start" or key == "s") and #keyboardText > 0 then
         isLoading = true
+        isKeyboarFocus = false
         CT.Search(keyboardText)
     end
 
