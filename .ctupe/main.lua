@@ -9,7 +9,7 @@ local Text = require("text")
 local Color = require("color")
 local Icon = require("icon")
 
-local msg = "DEVELOPMENT STAGE"
+local version = "v1.0.0 - Glad you like it!!!"
 local hasAPIKEY = false
 
 local isShowOnlineList = true
@@ -222,7 +222,7 @@ function BottomUI()
     love.graphics.rectangle("fill", xPos, yPos, 640, 29)
 
     love.graphics.setColor(1,1,1)
-    Text.DrawLeftText(xPos + 5, 450 + 5, msg)
+    Text.DrawLeftText(xPos + 5, 450 + 5, version)
 end
 
 function GuideUI()
