@@ -87,7 +87,14 @@ function CT.LoadSearchData()
         local dataResultJs = file:read("*all")
         file:close()
 
-        local rsObj = json.decode(dataResultJs)
+        local isOk,rsObj = pcall(function()
+            return json.decode(dataResultJs)
+        end)
+
+        if not isOk then
+            return resultData
+        end
+
         if   rsObj.contents ~= nil
          and rsObj.contents.twoColumnSearchResultsRenderer ~= nil
          and rsObj.contents.twoColumnSearchResultsRenderer.primaryContents ~= nil
