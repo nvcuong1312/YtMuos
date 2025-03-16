@@ -249,7 +249,7 @@ function GuideUI()
 
     if isKeyboarFocus then
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 20, "       Enter")
-        love.graphics.draw(Icon.Y, xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
+        love.graphics.draw(Icon.A, xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
 
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Backspace")
         love.graphics.draw(Icon.X, xPos + 5, yPos + heightTextBlock + 48, 0, 0.4)

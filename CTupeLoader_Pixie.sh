@@ -34,6 +34,9 @@ if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 
 	mv "CTupeData/UnzipData/YtMuos-master/.ctupe" "mnt/mmc/MUOS/application/CTupe"
 	
+	rm -r "mnt/mmc/MUOS/application/CTupe/config.lua"
+	mv "mnt/mmc/MUOS/application/CTupe/config_pixie.lua" "mnt/mmc/MUOS/application/CTupe/config.lua"
+	
 	if [ -e "mnt/mmc/MUOS/task/CTupeLoader_Pixie.sh" ]; then
 		rm -r "mnt/mmc/MUOS/task/CTupeLoader_Pixie.sh"
 	fi
