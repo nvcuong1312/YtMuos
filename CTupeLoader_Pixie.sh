@@ -1,0 +1,54 @@
+#!/bin/sh
+# ICON: CTupe
+
+if [ -d "CTupeData" ]; then
+  rm -r "CTupeData"
+fi
+
+wget -P "CTupeData/" https://github.com/nvcuong1312/YtMuos/archive/refs/heads/master.zip
+if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
+
+	if [ -e "usr/bin/youtube-dl" ]; then
+		rm -r "usr/bin/youtube-dl"
+	fi
+
+	cp "CTupeData/UnzipData/YtMuos-master/.ctupe/bin/yt-dlp" "usr/bin/yt-dlp"
+	chmod a+rx /usr/bin/yt-dlp
+	ln -fs /usr/bin/yt-dlp /usr/bin/youtube-dl
+
+	if [ -e "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png" ]; then
+		rm -r "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png"
+	fi
+
+	cp "CTupeData/UnzipData/YtMuos-master/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png"
+	
+	if [ -e "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png" ]; then
+		rm -r "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
+	fi
+
+	cp "CTupeData/UnzipData/YtMuos-master/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
+	
+	if [ -d "mnt/mmc/MUOS/application/CTupe" ]; then
+	  rm -r "mnt/mmc/MUOS/application/CTupe"
+	fi
+
+	mv "CTupeData/UnzipData/YtMuos-master/.ctupe" "mnt/mmc/MUOS/application/CTupe"
+	
+	if [ -e "mnt/mmc/MUOS/task/CTupeLoader_Pixie.sh" ]; then
+		rm -r "mnt/mmc/MUOS/task/CTupeLoader_Pixie.sh"
+	fi
+	
+	cp "CTupeData/UnzipData/YtMuos-master/CTupeLoader_Pixie.sh" "mnt/mmc/MUOS/task/CTupeLoader_Pixie.sh"
+	
+	echo "Done!"
+else
+	echo "Error!"
+fi
+
+echo "-----------------------------------"
+echo "|Author     : CuongNV             |"
+echo "|Complete!                        |"
+echo "|Thanks!                          |"
+echo "-----------------------------------"
+sleep 3
+
