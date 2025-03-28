@@ -481,6 +481,10 @@ function OnKeyPress(key)
                 function(page) cDownloadedPage = page end)
             end
         end
+
+        if key == "r1" then
+            
+        end
     end
 end
 

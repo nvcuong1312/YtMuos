@@ -14,13 +14,7 @@ local searchType = "1"
 local baseSavePath = ""
 
 function CT.LoadSavePath()
-    local savePath = io.open(Config.SAVE_PATH, "r")
-    if savePath then
-        baseSavePath = savePath:read("*all")
-    else
-        baseSavePath = "/mnt/mmc/ctupedownloaddata/"
-    end
-
+    baseSavePath = Config.SAVE_PATH
     return baseSavePath
 end
 

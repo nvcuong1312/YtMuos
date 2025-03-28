@@ -43,6 +43,14 @@ function Thread.GetSearchVideoResultChannel()
     return love.thread.getChannel("search_result")
 end
 
+function Thread.GetNextPageChannel()
+    return love.thread.getChannel("next_page")
+end
+
+function Thread.GetNextPageResultChannel()
+    return love.thread.getChannel("next_page_result")
+end
+
 function Thread.GetDownloadVideoUrlChannel()
     return love.thread.getChannel("download_video_url")
 end

@@ -9,7 +9,11 @@ Config.PATH_SEPARATOR  = package.config:sub(1, 1)
 Config.SEARCH_RESUTL_JSON = "data/result.json"
 Config.SEARCH_RESUTL_CR_JSON = "data/result_cr.json"
 Config.SEARCH_TYPE = "data/TYPE"
-Config.SAVE_PATH = "data/SAVEPATH"
+
+-- Change this to your own path
+Config.SAVE_PATH = "/mnt/mmc/ctupedata/"
+
+
 Config.SAVE_MEDIA_PATH = Config.PATH_SEPARATOR .."MediaData"
 Config.SAVE_INFO_PATH = Config.PATH_SEPARATOR .. "InfoData"
 Config.SAVE_THUMBNAIL_PATH = Config.PATH_SEPARATOR .. "Thumbnail.jpg"
