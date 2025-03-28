@@ -9,7 +9,7 @@ local Text = require("text")
 local Color = require("color")
 local Icon = require("icon")
 
-local version = "v1.0.0 - Glad you like it!!!"
+local version = "v1.0.1 - Glad you like it!!!"
 local hasAPIKEY = false
 
 local isShowOnlineList = true
@@ -28,8 +28,12 @@ local isKeyboarFocus = false
 local keyboardText = ""
 
 local isLoading = false
+local isPlaying = false
 
 local baseSavePath = ""
+
+local originalWidth, originalHeight = 640, 480
+local isMinimized = false
 
 function love.load()
     Font.Load()
@@ -44,9 +48,15 @@ function love.load()
     LoadImgData()
 
     hasAPIKEY = true
+
+    originalWidth, originalHeight = love.graphics.getWidth(), love.graphics.getHeight()
 end
 
 function love.draw()
+    if isPlaying then
+        return
+    end
+
     pcall(function ()
         love.graphics.setBackgroundColor(Color.BG)
 
@@ -65,6 +75,25 @@ function love.draw()
 end
 
 function love.update(dt)
+    local playDone = Thread.GetPlayDone():pop()
+    if playDone then
+        isPlaying = false
+    end
+
+    if isPlaying then
+        love.timer.sleep(1)
+        return
+    end
+
+    if isMinimized then
+        restoreWindow()
+    end
+
+    local videoDownloaded = Thread.GetDownloadVideoResultChannel():pop()
+    if videoDownloaded then
+        isLoading = false
+    end
+
     local imgDownloaded = Thread.GetDownloadResutlChannel():pop()
     if imgDownloaded then
         table.insert(imgDataList, imgDownloaded)
@@ -82,16 +111,6 @@ function love.update(dt)
         isLoading = false
         cPage = 1
         cIdx = 1
-    end
-
-    local videoDownloaded = Thread.GetDownloadVideoResultChannel():pop()
-    if videoDownloaded then
-        isLoading = false
-    end
-
-    local playDone = Thread.GetPlayDone():pop()
-    if playDone then
-        isLoading = false
     end
 
     local deleteFile = Thread.GetDeleteVideoResultChannel():pop()
@@ -249,7 +268,7 @@ function GuideUI()
 
     if isKeyboarFocus then
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 20, "       Enter")
-        love.graphics.draw(Icon.Y, xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
+        love.graphics.draw(Icon.A, xPos + 5, yPos + heightTextBlock + 18, 0, 0.4)
 
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Backspace")
         love.graphics.draw(Icon.X, xPos + 5, yPos + heightTextBlock + 48, 0, 0.4)
@@ -408,13 +427,15 @@ function OnKeyPress(key)
         if isShowOnlineList then
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
-                isLoading = true
+                isPlaying = true
+                minimizeWindow()
                 CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id))
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
-                isLoading = true
+                isPlaying = true
+                minimizeWindow()
                 CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
             end
         end
@@ -470,6 +491,16 @@ function ChangeOfflineMode()
         downloadedData = CT.LoadDataFromSavePath()
         LoadOfflineImgData()
     end
+end
+
+function minimizeWindow()
+    love.window.setMode(1, 1, {borderless = true})
+    isMinimized = true
+end
+
+function restoreWindow()
+    love.window.setMode(originalWidth, originalHeight, {resizable = true})
+    isMinimized = false
 end
 
  function GridKeyUp(list,currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
