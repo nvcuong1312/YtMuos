@@ -6,6 +6,7 @@ if [ -d "CTupeData" ]; then
 fi
 
 wget -P "CTupeData/" https://github.com/nvcuong1312/YtMuos/archive/refs/heads/master.zip
+wget -P "CTupeData/" https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp
 if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 	if [ -e "mnt/mmc/MUOS/application/CTupe.sh" ]; then
 		rm -r "mnt/mmc/MUOS/application/CTupe.sh"
@@ -17,7 +18,7 @@ if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 		rm -r "usr/bin/youtube-dl"
 	fi
 
-	cp "CTupeData/UnzipData/YtMuos-master/.ctupe/bin/yt-dlp" "usr/bin/yt-dlp"
+	cp "CTupeData/yt-dlp" "usr/bin/yt-dlp"
 	chmod a+rx /usr/bin/yt-dlp
 	ln -fs /usr/bin/yt-dlp /usr/bin/youtube-dl
 
