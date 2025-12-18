@@ -34,6 +34,11 @@ Config.PLAY_FFPLAY_CMD =
 
 URL="%s"
 
+GOV_GO="/tmp/gov_go"
+[ -e "$GOV_GO" ] && cat "$GOV_GO" >"$(GET_VAR "device" "cpu/governor")"
+
+SETUP_SDL_ENVIRONMENT
+
 GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/PortMaster/gptokeyb2"
 APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
 
@@ -65,6 +70,11 @@ Config.PLAY_FFPLAY_OFFLINE_CMD =
 
 URL="%s"
 
+GOV_GO="/tmp/gov_go"
+[ -e "$GOV_GO" ] && cat "$GOV_GO" >"$(GET_VAR "device" "cpu/governor")"
+
+SETUP_SDL_ENVIRONMENT
+
 GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/PortMaster/gptokeyb2"
 APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
 
@@ -95,6 +105,11 @@ Config.PLAY_MPV_CMD =
 . /opt/muos/script/var/func.sh
 
 URL="%s"
+
+GOV_GO="/tmp/gov_go"
+[ -e "$GOV_GO" ] && cat "$GOV_GO" >"$(GET_VAR "device" "cpu/governor")"
+
+SETUP_SDL_ENVIRONMENT
 
 GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/PortMaster/gptokeyb2"
 APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
