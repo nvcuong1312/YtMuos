@@ -5,6 +5,11 @@
 
 echo app >/tmp/act_go
 
+GOV_GO="/tmp/gov_go"
+[ -e "$GOV_GO" ] && cat "$GOV_GO" >"$(GET_VAR "device" "cpu/governor")"
+
+SETUP_SDL_ENVIRONMENT
+
 # Define paths and commands
 LOVEDIR="$(GET_VAR "device" "storage/rom/mount")/MUOS/application/CTupe"
 GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/PortMaster/gptokeyb2"
@@ -19,6 +24,6 @@ cd "$LOVEDIR" || exit
 SET_VAR "system" "foreground_process" "love"
 
 # Run Application
-$GPTOKEYB "love" &
+"${GPTOKEYB}" "$BINDIR/love"
 ./bin/love .
 kill -9 "$(pidof gptokeyb2.armhf)"
