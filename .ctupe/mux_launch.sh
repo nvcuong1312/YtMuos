@@ -19,6 +19,6 @@ cd "$LOVEDIR" || exit
 SET_VAR "system" "foreground_process" "love"
 
 # Run Application
-"${GPTOKEYB}" "$BINDIR/love"
+$GPTOKEYB "love" &
 ./bin/love .
 kill -9 "$(pidof gptokeyb2.armhf)"
