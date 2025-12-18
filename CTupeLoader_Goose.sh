@@ -47,6 +47,7 @@ if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 	echo "Done!"
 else
 	echo "Error!"
+	
 fi
 
 echo "-----------------------------------"
