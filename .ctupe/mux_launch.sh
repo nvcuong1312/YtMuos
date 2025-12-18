@@ -7,11 +7,11 @@ echo app >/tmp/act_go
 
 # Define paths and commands
 LOVEDIR="$(GET_VAR "device" "storage/rom/mount")/MUOS/application/CTupe"
-GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/emulator/gptokeyb/gptokeyb2.armhf"
+GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/PortMaster/gptokeyb2"
+
 BINDIR="$LOVEDIR/bin"
 
 # Export environment variables
-export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 export LD_LIBRARY_PATH="$BINDIR/libs.aarch64:$LD_LIBRARY_PATH"
 
 # Launcher
@@ -19,6 +19,6 @@ cd "$LOVEDIR" || exit
 SET_VAR "system" "foreground_process" "love"
 
 # Run Application
-$GPTOKEYB "love" &
+"${GPTOKEYB}" "$BINDIR/love"
 ./bin/love .
 kill -9 "$(pidof gptokeyb2.armhf)"

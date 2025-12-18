@@ -35,6 +35,8 @@ local baseSavePath = ""
 local originalWidth, originalHeight = 640, 480
 local isMinimized = false
 
+local _screenW, _screenH = love.window.getDesktopDimensions()
+
 function love.load()
     Font.Load()
     Keyboard:create()
@@ -53,6 +55,11 @@ function love.load()
 end
 
 function love.draw()
+    local scaleX = _screenW / 640
+    local scaleY = _screenH / 480
+    love.graphics.push()
+    love.graphics.scale(scaleX, scaleY)
+
     if isPlaying then
         return
     end
@@ -72,6 +79,8 @@ function love.draw()
             Loading.Draw()
         end
     end)
+
+    love.graphics.pop()
 end
 
 function love.update(dt)
