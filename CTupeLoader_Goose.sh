@@ -17,17 +17,17 @@ if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 	chmod a+rx /usr/bin/yt-dlp
 	ln -fs /usr/bin/yt-dlp /usr/bin/youtube-dl
 
-	if [ -e "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png" ]; then
-		rm -r "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png"
-	fi
+	# if [ -e "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png" ]; then
+	# 	rm -r "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png"
+	# fi
 
-	cp "CTupeData/UnzipData/YtMuos-master/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png"
+	# cp "CTupeData/UnzipData/YtMuos-master/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxapp/CTupe.png"
 	
-	if [ -e "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png" ]; then
-		rm -r "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
-	fi
+	# if [ -e "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png" ]; then
+	# 	rm -r "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
+	# fi
 
-	cp "CTupeData/UnzipData/YtMuos-master/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
+	# cp "CTupeData/UnzipData/YtMuos-master/.ctupe/Assets/ctupe_logo.png" "opt/muos/default/MUOS/theme/active/glyph/muxtask/CTupe.png"
 	
 	if [ -d "mnt/mmc/MUOS/application/CTupe" ]; then
 	  rm -r "mnt/mmc/MUOS/application/CTupe"
