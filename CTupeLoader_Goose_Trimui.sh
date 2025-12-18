@@ -36,13 +36,13 @@ if unzip -o "CTupeData/master.zip" -d "CTupeData/UnzipData/"; then
 	mv "CTupeData/UnzipData/YtMuos-master/.ctupe" "mnt/mmc/MUOS/application/CTupe"
 	
 	rm -r "mnt/mmc/MUOS/application/CTupe/config.lua"
-	mv "mnt/mmc/MUOS/application/CTupe/config_goose.lua" "mnt/mmc/MUOS/application/CTupe/config.lua"
+	mv "mnt/mmc/MUOS/application/CTupe/config_goose_trimui.lua" "mnt/mmc/MUOS/application/CTupe/config.lua"
 	
-	if [ -e "opt/muos/share/task/CTupeLoader_Goose.sh" ]; then
-		rm -r "opt/muos/share/task/CTupeLoader_Goose.sh"
+	if [ -e "opt/muos/share/task/CTupeLoader_Goose_Trimui.sh" ]; then
+		rm -r "opt/muos/share/task/CTupeLoader_Goose_Trimui.sh"
 	fi
 	
-	cp "CTupeData/UnzipData/YtMuos-master/CTupeLoader_Goose.sh" "opt/muos/share/task/CTupeLoader_Goose.sh"
+	cp "CTupeData/UnzipData/YtMuos-master/CTupeLoader_Goose_Trimui.sh" "opt/muos/share/task/CTupeLoader_Goose_Trimui.sh"
 	
 	echo "Done!"
 else
