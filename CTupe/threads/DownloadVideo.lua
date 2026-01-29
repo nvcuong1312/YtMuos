@@ -45,7 +45,7 @@ while true do
 
         os.execute("wget \"".. uObj.data.thumbnail.url .."\" -O " .. thumbPath)
 
-        local command = "youtube-dl -S \"res:640\" -o - \"" .. url .."\" > " .. dataPath
+        local command = "yt-dlp --js-runtimes \"deno:/mnt/mmc/MUOS/application/CTupe/bin/deno\" -S \"res:640\" -o - \"" .. url .."\" > " .. dataPath
         os.execute(command)
 
         local jsonData = json.encode(uObj.data)
