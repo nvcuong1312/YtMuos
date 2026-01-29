@@ -11,6 +11,7 @@ GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/emulator/gptokeyb/gptokey
 BINDIR="$LOVEDIR/bin"
 
 # Export environment variables
+SETUP_SDL_ENVIRONMENT
 export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 export LD_LIBRARY_PATH="$BINDIR/libs.aarch64:$LD_LIBRARY_PATH"
 
