@@ -32,8 +32,7 @@ local isPlaying = false
 
 local baseSavePath = ""
 
-local originalWidth, originalHeight = 640, 480
-local isMinimized = false
+local _screenW, _screenH = love.window.getDesktopDimensions()
 
 function love.load()
     Font.Load()
@@ -48,17 +47,19 @@ function love.load()
     LoadImgData()
 
     hasAPIKEY = true
-
-    originalWidth, originalHeight = love.graphics.getWidth(), love.graphics.getHeight()
 end
 
 function love.draw()
     if isPlaying then
-        Loading.Draw()
         return
     end
 
     pcall(function ()
+        local scaleX = _screenW / 640
+        local scaleY = _screenH / 480
+        love.graphics.push()
+        love.graphics.scale(scaleX, scaleY)
+        
         love.graphics.setBackgroundColor(Color.BG)
 
         if not isLoading then
@@ -72,6 +73,8 @@ function love.draw()
         if isLoading then
             Loading.Draw()
         end
+
+        love.graphics.pop()
     end)
 end
 
@@ -86,9 +89,9 @@ function love.update(dt)
         return
     end
 
-    if isMinimized then
-        restoreWindow()
-    end
+    -- if isMinimized then
+    --     restoreWindow()
+    -- end
 
     local ytdlpUpdated = Thread.GetUpdateYtDlpResultChannel():pop()
     if ytdlpUpdated then
@@ -406,6 +409,9 @@ end
 
 function OnKeyPress(key)
     if isLoading then return end
+    if key == "b" and not isPlaying and not isKeyboarFocus then
+        love.event.quit()
+    end
 
     if key == "l1" or key == "l" then
         isKeyboarFocus = not isKeyboarFocus
@@ -437,14 +443,14 @@ function OnKeyPress(key)
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
                 isPlaying = true
-                minimizeWindow()
+                -- minimizeWindow()
                 CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id))
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
                 isPlaying = true
-                minimizeWindow()
+                -- minimizeWindow()
                 CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
             end
         end
@@ -513,13 +519,13 @@ function ChangeOfflineMode()
 end
 
 function minimizeWindow()
-    love.window.setMode(1, 1, {borderless = true})
-    isMinimized = true
+    -- love.window.setMode(1, 1, {borderless = true})
+    -- isMinimized = true
 end
 
 function restoreWindow()
-    love.window.setMode(originalWidth, originalHeight, {resizable = true})
-    isMinimized = false
+    -- love.window.setMode(_screenW, _screenH, {resizable = true})
+    -- isMinimized = false
 end
 
  function GridKeyUp(list,currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
