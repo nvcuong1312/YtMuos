@@ -54,6 +54,7 @@ end
 
 function love.draw()
     if isPlaying then
+        Loading.Draw()
         return
     end
 
@@ -87,6 +88,11 @@ function love.update(dt)
 
     if isMinimized then
         restoreWindow()
+    end
+
+    local ytdlpUpdated = Thread.GetUpdateYtDlpResultChannel():pop()
+    if ytdlpUpdated then
+        isLoading = false
     end
 
     local videoDownloaded = Thread.GetDownloadVideoResultChannel():pop()
@@ -296,10 +302,13 @@ function GuideUI()
         end
         love.graphics.draw(Icon.X , xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
     end
-
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "                     Exit")
+    
+    
     love.graphics.draw(Icon.Select, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
     love.graphics.draw(Icon.Start, xPos + 5 + 30, yPos + heightTextBlock + 118, 0, 0.4)
+    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "                     Exit")
+
+    Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 120, "Menu: Update Yt-Dlp")
 end
 
 function LoadImgData()
@@ -455,6 +464,12 @@ function OnKeyPress(key)
                 CT.DeleteMediaFile(downloadedData[pos].id)
             end
         end
+    end
+
+    if key == "guide" then
+        isLoading = true
+        Thread.GetUpdateYtDlpChannel():push({type = "update"})
+        return
     end
 
     if table.getn(searchData) > 0 then
