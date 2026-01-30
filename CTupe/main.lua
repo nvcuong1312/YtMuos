@@ -130,6 +130,7 @@ end
 function love.update(dt)
     local playDone = Thread.GetPlayDone():pop()
     if playDone then
+        isLoading = false
         isPlaying = false
     end
 
@@ -358,7 +359,8 @@ function GuideUI()
     Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 120, "       Exit")
     love.graphics.draw(Icon.B, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
 
-    Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 120, "Menu: Update Yt-Dlp")
+    Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 120, "       Update yt-dlp")
+    love.graphics.draw(Icon.R1 , xPos + 5 + 100, yPos + heightTextBlock + 122, 0, 0.4)
 end
 
 function LoadImgData()
@@ -519,7 +521,7 @@ function OnKeyPress(key)
         end
     end
 
-    if key == "guide" then
+    if key == "r1" then
         isLoading = true
         Thread.GetUpdateYtDlpChannel():push({type = "update"})
         return
@@ -548,10 +550,6 @@ function OnKeyPress(key)
                 function(idx) cDownloadedIdx = idx end,
                 function(page) cDownloadedPage = page end)
             end
-        end
-
-        if key == "r1" then
-            
         end
     end
 end

@@ -85,6 +85,7 @@ Config.PLAY_MPV_CMD =
 . /opt/muos/script/var/func.sh
 
 URL="%s"
+RESOLUTION="%s"
 
 GPTOKEYB="/mnt/mmc/MUOS/application/CTupe/bin/gptokeyb3"
 APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
@@ -97,7 +98,31 @@ SETUP_SDL_ENVIRONMENT
 SET_VAR "system" "foreground_process" "mpv"
 
 $GPTOKEYB "mpv" -c "$APP_DIR/general.gptk" &
-/usr/bin/mpv "$URL"
+yt-dlp --quiet --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - | /usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
+
+kill -9 "$(pidof gptokeyb3)"
+]]
+
+Config.PLAY_MPV_OFFLINE_CMD =
+[[
+#!/bin/sh
+
+. /opt/muos/script/var/func.sh
+
+URL="%s"
+
+GPTOKEYB="/mnt/mmc/MUOS/application/CTupe/bin/gptokeyb3"
+APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
+
+HOME="$(GET_VAR "device" "board/home")"
+export HOME
+
+SETUP_SDL_ENVIRONMENT
+
+SET_VAR "system" "foreground_process" "mpv"
+
+$GPTOKEYB "mpv" -c "$APP_DIR/general.gptk" &
+/usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 "$URL"
 
 kill -9 "$(pidof gptokeyb3)"
 ]]
