@@ -29,10 +29,55 @@ local keyboardText = ""
 
 local isLoading = false
 local isPlaying = false
+local isMinimized = false
 
 local baseSavePath = ""
 
 local _screenW, _screenH = love.window.getDesktopDimensions()
+
+function love.run()
+	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+
+	-- We don't want the first frame's dt to include time taken by love.load.
+	if love.timer then love.timer.step() end
+
+	local dt = 0
+
+	-- Main loop time.
+	return function()
+		-- Process events.
+		if love.event then
+			love.event.pump()
+			for name, a,b,c,d,e,f in love.event.poll() do
+				if name == "quit" then
+					if not love.quit or not love.quit() then
+						return a or 0
+					end
+				end
+				love.handlers[name](a,b,c,d,e,f)
+			end
+		end
+
+		-- Update dt, as we'll be passing it to update
+		if love.timer then dt = love.timer.step() end
+
+		-- Call update and draw
+		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
+        
+        if isPlaying then return end
+
+		if love.graphics and love.graphics.isActive() then
+			love.graphics.origin()
+			love.graphics.clear(love.graphics.getBackgroundColor())
+
+			if love.draw then love.draw() end
+
+			love.graphics.present()
+		end
+
+		if love.timer then love.timer.sleep(0.001) end
+	end
+end
 
 function love.load()
     Font.Load()
@@ -57,6 +102,7 @@ function love.draw()
     pcall(function ()
         local scaleX = _screenW / 640
         local scaleY = _screenH / 480
+
         love.graphics.push()
         love.graphics.scale(scaleX, scaleY)
         
@@ -85,7 +131,7 @@ function love.update(dt)
     end
 
     if isPlaying then
-        love.timer.sleep(1)
+        love.timer.sleep(3)
         return
     end
 
@@ -444,14 +490,14 @@ function OnKeyPress(key)
             if table.getn(searchData) >= pos  then
                 isPlaying = true
                 -- minimizeWindow()
-                CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id))
+                CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id), _screenH)
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
                 isPlaying = true
                 -- minimizeWindow()
-                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
+                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH, _screenH)
             end
         end
     end

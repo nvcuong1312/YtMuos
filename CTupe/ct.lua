@@ -207,12 +207,12 @@ function CT.DeleteMediaFile(id)
     Thread.GetDeleteVideoIdChannel():push({baseSavePath = baseSavePath, id = id})
 end
 
-function CT.Play(url)
-    Thread.GetPlayUrl():push({url = url, isOnline = true})
+function CT.Play(url, resolution)
+    Thread.GetPlayUrl():push({url = url, isOnline = true, resolution = resolution})
 end
 
-function CT.PlayOffline(url)
-    Thread.GetPlayUrl():push({url = url, isOnline = false})
+function CT.PlayOffline(url, resolution)
+    Thread.GetPlayUrl():push({url = url, isOnline = false, resolution = resolution})
 end
 
 return CT

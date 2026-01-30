@@ -8,9 +8,10 @@ while true do
     local uObj = uChn:pop()
     if uObj then
         local url = uObj.url
+        local res = "res:"..(uObj.resolution or "720")
 
         if uObj.isOnline then
-            local command = string.format(Config.PLAY_FFPLAY_CMD, url)
+            local command = string.format(Config.PLAY_FFPLAY_CMD, url, res)
             os.execute(command)
             dChn:push(true)
         else

@@ -33,6 +33,7 @@ Config.PLAY_FFPLAY_CMD =
 . /opt/muos/script/var/func.sh
 
 URL="%s"
+RESOLUTION="%s"
 
 echo app >/tmp/act_go
 
@@ -43,22 +44,14 @@ APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
 HOME="$(GET_VAR "device" "board/home")"
 export HOME
 
-SDL_HQ_SCALER="$(GET_VAR "device" "sdl/scaler")"
-SDL_ROTATION="$(GET_VAR "device" "sdl/rotation")"
-SDL_BLITTER_DISABLED="$(GET_VAR "device" "sdl/blitter_disabled")"
-export SDL_HQ_SCALER SDL_ROTATION SDL_BLITTER_DISABLED
-
 SETUP_SDL_ENVIRONMENT
-export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
 
 SET_VAR "system" "foreground_process" "ffplay"
 
 $GPTOKEYB "ffplay" -c "$APP_DIR/general_ffplay.gptk" &
-yt-dlp --quiet --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "res:640" "$URL" -o - | /usr/bin/ffplay - -autoexit -loglevel quiet > /dev/null 2>&1
+yt-dlp --quiet --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - | /usr/bin/ffplay - -autoexit -loglevel quiet > /dev/null 2>&1
 
 kill -9 "$(pidof gptokeyb3)"
-
-unset SDL_HQ_SCALER SDL_ROTATION SDL_BLITTER_DISABLED
 ]]
 
 Config.PLAY_FFPLAY_OFFLINE_CMD =
