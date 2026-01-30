@@ -134,7 +134,7 @@ function love.update(dt)
     end
 
     if isPlaying then
-        love.timer.sleep(3)
+        love.timer.sleep(1)
         return
     end
 
