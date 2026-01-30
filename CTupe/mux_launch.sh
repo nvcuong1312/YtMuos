@@ -5,13 +5,17 @@
 
 echo app >/tmp/act_go
 
-# Define paths and commands
+PM_DIR="$(GET_VAR "device" "storage/rom/mount")/MUOS/PortMaster"
+LIB_IPOSE="libinterpose.aarch64.so"
+ln -sf "$PM_DIR/$LIB_IPOSE" "/usr/lib/$LIB_IPOSE" >/dev/null 2>&1
+
+GPTOKEYB="/mnt/mmc/MUOS/application/CTupe/bin/gptokeyb2"
 LOVEDIR="$(GET_VAR "device" "storage/rom/mount")/MUOS/application/CTupe"
-GPTOKEYB="$(GET_VAR "device" "storage/rom/mount")/MUOS/emulator/gptokeyb/gptokeyb2.armhf"
 BINDIR="$LOVEDIR/bin"
 
 # Export environment variables
-export SDL_GAMECONTROLLERCONFIG_FILE="/usr/lib/gamecontrollerdb.txt"
+SETUP_SDL_ENVIRONMENT
+
 export LD_LIBRARY_PATH="$BINDIR/libs.aarch64:$LD_LIBRARY_PATH"
 
 # Launcher
@@ -21,4 +25,4 @@ SET_VAR "system" "foreground_process" "love"
 # Run Application
 $GPTOKEYB "love" &
 ./bin/love .
-kill -9 "$(pidof gptokeyb2.armhf)"
+kill -9 "$(pidof gptokeyb2)"

@@ -29,11 +29,58 @@ local keyboardText = ""
 
 local isLoading = false
 local isPlaying = false
+local iCount = false
 
 local baseSavePath = ""
 
-local originalWidth, originalHeight = 640, 480
-local isMinimized = false
+local _screenW, _screenH = love.window.getDesktopDimensions()
+
+function love.run()
+	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
+
+	-- We don't want the first frame's dt to include time taken by love.load.
+	if love.timer then love.timer.step() end
+
+	local dt = 0
+
+	-- Main loop time.
+	return function()
+		-- Process events.
+		if love.event then
+			love.event.pump()
+			for name, a,b,c,d,e,f in love.event.poll() do
+				if name == "quit" then
+					if not love.quit or not love.quit() then
+						return a or 0
+					end
+				end
+				love.handlers[name](a,b,c,d,e,f)
+			end
+		end
+
+		-- Update dt, as we'll be passing it to update
+		if love.timer then dt = love.timer.step() end
+
+		-- Call update and draw
+		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
+
+        if not isPlaying then iCount = 0 end
+        if isPlaying and iCount >= 3 then return end
+
+		if love.graphics and love.graphics.isActive() then
+			love.graphics.origin()
+			love.graphics.clear(love.graphics.getBackgroundColor())
+
+			if love.draw then love.draw() end
+
+			love.graphics.present()
+		end
+
+		if love.timer then love.timer.sleep(0.001) end
+
+        if isPlaying and iCount < 3 then iCount = iCount + 1 end
+	end
+end
 
 function love.load()
     Font.Load()
@@ -48,8 +95,6 @@ function love.load()
     LoadImgData()
 
     hasAPIKEY = true
-
-    originalWidth, originalHeight = love.graphics.getWidth(), love.graphics.getHeight()
 end
 
 function love.draw()
@@ -58,6 +103,12 @@ function love.draw()
     end
 
     pcall(function ()
+        local scaleX = _screenW / 640
+        local scaleY = _screenH / 480
+
+        love.graphics.push()
+        love.graphics.scale(scaleX, scaleY)
+        
         love.graphics.setBackgroundColor(Color.BG)
 
         if not isLoading then
@@ -71,6 +122,8 @@ function love.draw()
         if isLoading then
             Loading.Draw()
         end
+
+        love.graphics.pop()
     end)
 end
 
@@ -81,12 +134,17 @@ function love.update(dt)
     end
 
     if isPlaying then
-        love.timer.sleep(1)
+        love.timer.sleep(3)
         return
     end
 
-    if isMinimized then
-        restoreWindow()
+    -- if isMinimized then
+    --     restoreWindow()
+    -- end
+
+    local ytdlpUpdated = Thread.GetUpdateYtDlpResultChannel():pop()
+    if ytdlpUpdated then
+        isLoading = false
     end
 
     local videoDownloaded = Thread.GetDownloadVideoResultChannel():pop()
@@ -297,9 +355,10 @@ function GuideUI()
         love.graphics.draw(Icon.X , xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
     end
 
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "                     Exit")
-    love.graphics.draw(Icon.Select, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
-    love.graphics.draw(Icon.Start, xPos + 5 + 30, yPos + heightTextBlock + 118, 0, 0.4)
+    Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 120, "       Exit")
+    love.graphics.draw(Icon.B, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
+
+    Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 120, "Menu: Update Yt-Dlp")
 end
 
 function LoadImgData()
@@ -397,6 +456,9 @@ end
 
 function OnKeyPress(key)
     if isLoading then return end
+    if key == "b" and not isPlaying and not isKeyboarFocus then
+        love.event.quit()
+    end
 
     if key == "l1" or key == "l" then
         isKeyboarFocus = not isKeyboarFocus
@@ -428,15 +490,15 @@ function OnKeyPress(key)
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
                 isPlaying = true
-                minimizeWindow()
-                CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id))
+                -- minimizeWindow()
+                CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id), _screenH)
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
                 isPlaying = true
-                minimizeWindow()
-                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH)
+                -- minimizeWindow()
+                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH, _screenH)
             end
         end
     end
@@ -455,6 +517,12 @@ function OnKeyPress(key)
                 CT.DeleteMediaFile(downloadedData[pos].id)
             end
         end
+    end
+
+    if key == "guide" then
+        isLoading = true
+        Thread.GetUpdateYtDlpChannel():push({type = "update"})
+        return
     end
 
     if table.getn(searchData) > 0 then
@@ -498,13 +566,13 @@ function ChangeOfflineMode()
 end
 
 function minimizeWindow()
-    love.window.setMode(1, 1, {borderless = true})
-    isMinimized = true
+    -- love.window.setMode(1, 1, {borderless = true})
+    -- isMinimized = true
 end
 
 function restoreWindow()
-    love.window.setMode(originalWidth, originalHeight, {resizable = true})
-    isMinimized = false
+    -- love.window.setMode(_screenW, _screenH, {resizable = true})
+    -- isMinimized = false
 end
 
  function GridKeyUp(list,currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
