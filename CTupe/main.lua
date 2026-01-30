@@ -29,7 +29,7 @@ local keyboardText = ""
 
 local isLoading = false
 local isPlaying = false
-local isMinimized = false
+local iCount = false
 
 local baseSavePath = ""
 
@@ -63,8 +63,9 @@ function love.run()
 
 		-- Call update and draw
 		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
-        
-        if isPlaying then return end
+
+        if not isPlaying then iCount = 0 end
+        if isPlaying and iCount >= 3 then return end
 
 		if love.graphics and love.graphics.isActive() then
 			love.graphics.origin()
@@ -76,6 +77,8 @@ function love.run()
 		end
 
 		if love.timer then love.timer.sleep(0.001) end
+
+        if isPlaying and iCount < 3 then iCount = iCount + 1 end
 	end
 end
 
@@ -351,11 +354,9 @@ function GuideUI()
         end
         love.graphics.draw(Icon.X , xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
     end
-    
-    
-    love.graphics.draw(Icon.Select, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
-    love.graphics.draw(Icon.Start, xPos + 5 + 30, yPos + heightTextBlock + 118, 0, 0.4)
-    Text.DrawLeftText(xPos + 5, yPos + heightTextBlock + 120, "                     Exit")
+
+    Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 120, "       Exit")
+    love.graphics.draw(Icon.B, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
 
     Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 120, "Menu: Update Yt-Dlp")
 end
