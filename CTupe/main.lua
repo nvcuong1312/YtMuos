@@ -3,6 +3,7 @@ local Config = require("config")
 local CT = require("ct")
 local Font = require("font")
 local Keyboard = require("keyboard")
+local SearchHistory = require("searchhistory")
 local Thread = require("thread")
 local Loading = require("loading")
 local Text = require("text")
@@ -30,6 +31,12 @@ local keyboardText = ""
 local isLoading = false
 local isPlaying = false
 local loadingText = "loading..."
+
+local isShowSearchHistory = false
+local tableSearchHistory = {}
+local searchHistoryIdx = 1
+local searchHistoryPage = 1
+local tableSearchHistoryDisplay = {}
 
 local baseSavePath = ""
 
@@ -91,6 +98,8 @@ function love.load()
     searchData = CT.LoadSearchData()
     LoadImgData()
 
+    tableSearchHistory = CT.GetSearchHistory()
+
     hasAPIKEY = true
 end
 
@@ -110,6 +119,17 @@ function love.draw()
             GuideUI()
             BottomUI()
             Keyboard:draw(isKeyboarFocus)
+            
+            if isShowSearchHistory then
+                tableSearchHistoryDisplay = {}
+                local startIdx = (searchHistoryPage - 1) * 10 + 1
+                local endIdx = math.min(searchHistoryPage * 10, table.getn(tableSearchHistory))
+                for i = startIdx, endIdx do
+                    table.insert(tableSearchHistoryDisplay, tableSearchHistory[i])
+                end
+                
+                SearchHistory.Draw(tableSearchHistoryDisplay, searchHistoryIdx)
+            end
         end
 
         if isLoading then
@@ -455,6 +475,38 @@ end
 
 function OnKeyPress(key)
     if isLoading then return end
+
+    if isShowSearchHistory then
+        SearchHistory.keypressed(key,
+        function(action)
+            if action == "close" then
+                isShowSearchHistory = false
+            elseif action == "select" then
+                local selPos = (searchHistoryPage - 1) * 10 + searchHistoryIdx
+                keyboardText = tableSearchHistory[selPos]
+                isShowSearchHistory = false
+            elseif action == "delete" then
+                local delPos = (searchHistoryPage - 1) * 10 + searchHistoryIdx
+                table.remove(tableSearchHistory, delPos)
+                if searchHistoryIdx > table.getn(tableSearchHistory) then
+                    searchHistoryIdx = table.getn(tableSearchHistory)
+                end
+                CT.SaveSearchHistory(tableSearchHistory)
+
+            elseif action == "up" then
+                GridKeyUp(tableSearchHistory, searchHistoryPage, searchHistoryIdx, 10,
+                function(idx) searchHistoryIdx = idx end,
+                function(page) searchHistoryPage = page end)
+            elseif action == "down" then
+                GridKeyDown(tableSearchHistory, searchHistoryPage, searchHistoryIdx, 10,
+                function(idx) searchHistoryIdx = idx end,
+                function(page) searchHistoryPage = page end)
+            end
+        end)
+        
+        return
+    end
+
     if key == "b" and not isPlaying and not isKeyboarFocus then
         love.event.quit()
     end
@@ -466,6 +518,19 @@ function OnKeyPress(key)
     if (key == "start" or key == "s") and #keyboardText > 0 then
         setLoadingState(true, "searching...")
         isKeyboarFocus = false
+
+        local isExist = false
+        for _,text in pairs(tableSearchHistory) do
+            if text == keyboardText then
+                isExist = true
+                break
+            end
+        end
+        if not isExist then
+            table.insert(tableSearchHistory, 1, keyboardText)
+            CT.SaveSearchHistory(tableSearchHistory)
+        end
+
         CT.Search(keyboardText)
     end
 
@@ -476,6 +541,11 @@ function OnKeyPress(key)
     end
 
     if isKeyboarFocus then
+        if key == "r1" then
+            isShowSearchHistory = true
+            return
+        end
+
         Keyboard.keypressed(key, OnKeyboarCallBack)
         return
     end
@@ -488,7 +558,7 @@ function OnKeyPress(key)
         if isShowOnlineList then
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
-                 (true, "loading...")
+                 setLoadingState(true, "loading...")
                 CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id), _screenH)
             end
         else

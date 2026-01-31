@@ -9,7 +9,7 @@ Config.PATH_SEPARATOR  = package.config:sub(1, 1)
 Config.SEARCH_RESUTL_JSON = "data/result.json"
 Config.SEARCH_RESUTL_CR_JSON = "data/result_cr.json"
 Config.SEARCH_TYPE = "data/TYPE"
-
+Config.SEARCH_HISTORY = "data/search_history"
 
 -- Change this to your own path
 Config.SAVE_PATH = "/mnt/mmc/ctupedata/"

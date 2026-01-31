@@ -18,6 +18,31 @@ function CT.LoadSavePath()
     return baseSavePath
 end
 
+function CT.GetSearchHistory()
+    local resultData = {}
+
+    local file = io.open(Config.SEARCH_HISTORY, "r")
+    if not file then
+        return resultData
+    end
+
+    for line in file:lines() do
+        table.insert(resultData, line)
+    end
+
+    file:close()
+
+    return resultData
+end
+
+function CT.SaveSearchHistory(newHistory)
+    local file = io.open(Config.SEARCH_HISTORY, "w")
+    for _, v in pairs(newHistory) do
+        file:write(v .. "\n")
+    end
+    file:close()
+end
+
 function file_exists_cmd(path)
     if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") ~= "1" then
         local command = '[ -f "' .. path .. '" ]'
