@@ -208,6 +208,7 @@ function CT.DeleteMediaFile(id)
 end
 
 function CT.Play(url, resolution)
+    Thread.GetTrackingYtDlp():push({ a = 1})
     Thread.GetPlayUrl():push({url = url, isOnline = true, resolution = resolution})
 end
 

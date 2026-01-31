@@ -48,8 +48,10 @@ SETUP_SDL_ENVIRONMENT
 
 SET_VAR "system" "foreground_process" "ffplay"
 
+rm -f $APP_DIR/yt-dlp.log
+
 $GPTOKEYB "ffplay" -c "$APP_DIR/general_ffplay.gptk" &
-yt-dlp --quiet --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - | /usr/bin/ffplay -fs - -autoexit -loglevel quiet > /dev/null 2>&1
+yt-dlp --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> $APP_DIR/yt-dlp.log | /usr/bin/ffplay -fs - -autoexit -loglevel quiet
 
 kill -9 "$(pidof gptokeyb3)"
 ]]
@@ -98,7 +100,7 @@ SETUP_SDL_ENVIRONMENT
 SET_VAR "system" "foreground_process" "mpv"
 
 $GPTOKEYB "mpv" -c "$APP_DIR/general.gptk" &
-yt-dlp --quiet --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - | /usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
+yt-dlp --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> $APP_DIR/yt-dlp.log | /usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
 
 kill -9 "$(pidof gptokeyb3)"
 ]]

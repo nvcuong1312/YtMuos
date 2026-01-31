@@ -10,6 +10,7 @@ function Thread.Create()
     love.thread.newThread("threads/DownloadVideo.lua"):start()
     love.thread.newThread("threads/DeleteVideo.lua"):start()
     love.thread.newThread("threads/UpdateYtDlp.lua"):start()
+    love.thread.newThread("threads/TrackingYtDlp.lua"):start()
 end
 
 function Thread.GetDownloadResutlChannel()
@@ -74,6 +75,14 @@ end
 
 function Thread.GetUpdateYtDlpResultChannel()
     return love.thread.getChannel("update_ytdlp_result")
+end
+
+function Thread.GetTrackingYtDlp()
+    return love.thread.getChannel("tracking_ytdlp")
+end
+
+function Thread.GetTrackingYtDlpResultChannel()
+    return love.thread.getChannel("tracking_ytdlp_result")
 end
 
 return Thread

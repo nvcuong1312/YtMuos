@@ -29,7 +29,7 @@ local keyboardText = ""
 
 local isLoading = false
 local isPlaying = false
-local iCount = false
+local loadingText = "loading..."
 
 local baseSavePath = ""
 
@@ -64,8 +64,7 @@ function love.run()
 		-- Call update and draw
 		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
 
-        if not isPlaying then iCount = 0 end
-        if isPlaying and iCount >= 3 then return end
+        if isPlaying then return end
 
 		if love.graphics and love.graphics.isActive() then
 			love.graphics.origin()
@@ -77,8 +76,6 @@ function love.run()
 		end
 
 		if love.timer then love.timer.sleep(0.001) end
-
-        if isPlaying and iCount < 3 then iCount = iCount + 1 end
 	end
 end
 
@@ -98,10 +95,6 @@ function love.load()
 end
 
 function love.draw()
-    if isPlaying then
-        return
-    end
-
     pcall(function ()
         local scaleX = _screenW / 640
         local scaleY = _screenH / 480
@@ -120,7 +113,7 @@ function love.draw()
         end
 
         if isLoading then
-            Loading.Draw()
+            Loading.Draw(loadingText)
         end
 
         love.graphics.pop()
@@ -139,9 +132,17 @@ function love.update(dt)
         return
     end
 
-    -- if isMinimized then
-    --     restoreWindow()
-    -- end
+    local trackingYtDlp = Thread.GetTrackingYtDlpResultChannel():pop()
+    if trackingYtDlp then
+        if trackingYtDlp == "done" then
+            isLoading = false
+            isPlaying = true
+        else
+            setLoadingState(true, trackingYtDlp)
+        end
+
+        return
+    end
 
     local ytdlpUpdated = Thread.GetUpdateYtDlpResultChannel():pop()
     if ytdlpUpdated then
@@ -179,10 +180,6 @@ function love.update(dt)
         LoadOfflineImgData()
         cDownloadedIdx = 1
         cDownloadedPage = 1
-    end
-
-    if isLoading then
-        Loading.Update(dt)
     end
 end
 
@@ -467,7 +464,7 @@ function OnKeyPress(key)
     end
 
     if (key == "start" or key == "s") and #keyboardText > 0 then
-        isLoading = true
+        setLoadingState(true, "searching...")
         isKeyboarFocus = false
         CT.Search(keyboardText)
     end
@@ -491,15 +488,13 @@ function OnKeyPress(key)
         if isShowOnlineList then
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
-                isPlaying = true
-                -- minimizeWindow()
+                 (true, "loading...")
                 CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id), _screenH)
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
                 isPlaying = true
-                -- minimizeWindow()
                 CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH, _screenH)
             end
         end
@@ -510,19 +505,20 @@ function OnKeyPress(key)
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
                 isLoading = true
+                loadingText = "downloading..."
                 CT.GenerateMediaFile(searchData[pos])
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
-                isLoading = true
+                setLoadingState(true, "deleting...")
                 CT.DeleteMediaFile(downloadedData[pos].id)
             end
         end
     end
 
     if key == "r1" then
-        isLoading = true
+        setLoadingState(true, "updating yt-dlp...")
         Thread.GetUpdateYtDlpChannel():push({type = "update"})
         return
     end
@@ -563,14 +559,9 @@ function ChangeOfflineMode()
     end
 end
 
-function minimizeWindow()
-    -- love.window.setMode(1, 1, {borderless = true})
-    -- isMinimized = true
-end
-
-function restoreWindow()
-    -- love.window.setMode(_screenW, _screenH, {resizable = true})
-    -- isMinimized = false
+function setLoadingState(isShow, text)
+    isLoading = isShow
+    loadingText = text
 end
 
  function GridKeyUp(list,currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
