@@ -1,7 +1,6 @@
 local Config = {}
 
 Config.GRID_PAGE_ITEM = 5
-Config.MPV_PATH = "/opt/muos/script/launch/ext-mpv-ctupe.sh"
 Config.API_KEY_PATH = "data/api"
 
 Config.PATH_SEPARATOR  = package.config:sub(1, 1)
@@ -28,103 +27,30 @@ Config.YT_PLAY_URL = "https://www.youtube.com/watch?v=%s"
 
 Config.PLAY_FFPLAY_CMD =
 [[
-#!/bin/sh
-
-. /opt/muos/script/var/func.sh
+#!/bin/bash
 
 URL="%s"
 RESOLUTION="%s"
 
-echo app >/tmp/act_go
+GPTOKEYB="/tmp/gptokeyb3"
 
-GPTOKEYB="/mnt/mmc/MUOS/application/CTupe/bin/gptokeyb3"
+rm -f /tmp/yt-dlp.log
 
-APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
-
-HOME="$(GET_VAR "device" "board/home")"
-export HOME
-
-SETUP_SDL_ENVIRONMENT
-
-SET_VAR "system" "foreground_process" "ffplay"
-
-rm -f $APP_DIR/yt-dlp.log
-
-$GPTOKEYB "ffplay" -c "$APP_DIR/general_ffplay.gptk" &
-yt-dlp --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> $APP_DIR/yt-dlp.log | /usr/bin/ffplay -fs - -autoexit -loglevel quiet
+$GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" &
+yt-dlp --no-warnings --js-runtimes "deno:/usr/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> /tmp/yt-dlp.log | /usr/bin/ffplay -fs - -autoexit -loglevel quiet
 
 kill -9 "$(pidof gptokeyb3)"
 ]]
 
 Config.PLAY_FFPLAY_OFFLINE_CMD =
 [[
-#!/bin/sh
-
-. /opt/muos/script/var/func.sh
+#!/bin/bash
 
 URL="%s"
 
-GPTOKEYB="/mnt/mmc/MUOS/application/CTupe/bin/gptokeyb3"
-APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
+GPTOKEYB="/tmp/gptokeyb3"
 
-HOME="$(GET_VAR "device" "board/home")"
-export HOME
-
-SETUP_SDL_ENVIRONMENT
-
-SET_VAR "system" "foreground_process" "ffplay"
-
-$GPTOKEYB "ffplay" -c "$APP_DIR/general_ffplay.gptk" &
-/usr/bin/ffplay -fs "$URL" -autoexit -loglevel quiet
-
-kill -9 "$(pidof gptokeyb3)"
-]]
-
-Config.PLAY_MPV_CMD =
-[[
-#!/bin/sh
-
-. /opt/muos/script/var/func.sh
-
-URL="%s"
-RESOLUTION="%s"
-
-GPTOKEYB="/mnt/mmc/MUOS/application/CTupe/bin/gptokeyb3"
-APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
-
-HOME="$(GET_VAR "device" "board/home")"
-export HOME
-
-SETUP_SDL_ENVIRONMENT
-
-SET_VAR "system" "foreground_process" "mpv"
-
-$GPTOKEYB "mpv" -c "$APP_DIR/general.gptk" &
-yt-dlp --no-warnings --js-runtimes "deno:/mnt/mmc/MUOS/application/CTupe/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> $APP_DIR/yt-dlp.log | /usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
-
-kill -9 "$(pidof gptokeyb3)"
-]]
-
-Config.PLAY_MPV_OFFLINE_CMD =
-[[
-#!/bin/sh
-
-. /opt/muos/script/var/func.sh
-
-URL="%s"
-
-GPTOKEYB="/mnt/mmc/MUOS/application/CTupe/bin/gptokeyb3"
-APP_DIR="/mnt/mmc/MUOS/application/CTupe/data"
-
-HOME="$(GET_VAR "device" "board/home")"
-export HOME
-
-SETUP_SDL_ENVIRONMENT
-
-SET_VAR "system" "foreground_process" "mpv"
-
-$GPTOKEYB "mpv" -c "$APP_DIR/general.gptk" &
-/usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 "$URL"
+$GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" & ffplay -fs "$URL" -autoexit -loglevel quiet
 
 kill -9 "$(pidof gptokeyb3)"
 ]]

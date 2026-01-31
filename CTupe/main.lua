@@ -42,6 +42,11 @@ local baseSavePath = ""
 
 local _screenW, _screenH = love.window.getDesktopDimensions()
 
+local function fileExists(path)
+    local ok = os.execute('[ -f "' .. path .. '" ]')
+    return ok == true or ok == 0
+end
+
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
 
@@ -104,6 +109,10 @@ function love.load()
     end
 
     hasAPIKEY = true
+
+    if not fileExists("/usr/bin/yt-dlp") then
+        OnKeyPress("r1")
+    end
 end
 
 function love.draw()

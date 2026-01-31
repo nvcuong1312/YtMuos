@@ -6,7 +6,7 @@ local uChn = Thread.GetTrackingYtDlp()
 -- true/false
 local dChn = Thread.GetTrackingYtDlpResultChannel()
 
-local logPath = "/mnt/mmc/MUOS/application/CTupe/data/yt-dlp.log"
+local logPath = "/tmp/yt-dlp.log"
 while true do
     local uObj = uChn:pop()
     if uObj then
