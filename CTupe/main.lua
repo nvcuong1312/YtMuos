@@ -99,6 +99,9 @@ function love.load()
     LoadImgData()
 
     tableSearchHistory = CT.GetSearchHistory()
+    if #tableSearchHistory > 0 then
+        keyboardText = tableSearchHistory[1]
+    end
 
     hasAPIKEY = true
 end
@@ -348,6 +351,9 @@ function GuideUI()
 
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Backspace")
         love.graphics.draw(Icon.X, xPos + 5, yPos + heightTextBlock + 48, 0, 0.4)
+
+        Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 80, "       History")
+        love.graphics.draw(Icon.R1, xPos + 5, yPos + heightTextBlock + 82, 0, 0.4)
 
         Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Space")
         love.graphics.draw(Icon.B, xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
