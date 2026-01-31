@@ -3,6 +3,7 @@ local Config = require("config")
 local CT = require("ct")
 local Font = require("font")
 local Keyboard = require("keyboard")
+local SearchHistory = require("searchhistory")
 local Thread = require("thread")
 local Loading = require("loading")
 local Text = require("text")
@@ -29,7 +30,13 @@ local keyboardText = ""
 
 local isLoading = false
 local isPlaying = false
-local iCount = false
+local loadingText = "loading..."
+
+local isShowSearchHistory = false
+local tableSearchHistory = {}
+local searchHistoryIdx = 1
+local searchHistoryPage = 1
+local tableSearchHistoryDisplay = {}
 
 local baseSavePath = ""
 
@@ -64,8 +71,7 @@ function love.run()
 		-- Call update and draw
 		if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
 
-        if not isPlaying then iCount = 0 end
-        if isPlaying and iCount >= 3 then return end
+        if isPlaying then return end
 
 		if love.graphics and love.graphics.isActive() then
 			love.graphics.origin()
@@ -77,8 +83,6 @@ function love.run()
 		end
 
 		if love.timer then love.timer.sleep(0.001) end
-
-        if isPlaying and iCount < 3 then iCount = iCount + 1 end
 	end
 end
 
@@ -94,14 +98,15 @@ function love.load()
     searchData = CT.LoadSearchData()
     LoadImgData()
 
+    tableSearchHistory = CT.GetSearchHistory()
+    if #tableSearchHistory > 0 then
+        keyboardText = tableSearchHistory[1]
+    end
+
     hasAPIKEY = true
 end
 
 function love.draw()
-    if isPlaying then
-        return
-    end
-
     pcall(function ()
         local scaleX = _screenW / 640
         local scaleY = _screenH / 480
@@ -117,10 +122,21 @@ function love.draw()
             GuideUI()
             BottomUI()
             Keyboard:draw(isKeyboarFocus)
+            
+            if isShowSearchHistory then
+                tableSearchHistoryDisplay = {}
+                local startIdx = (searchHistoryPage - 1) * 10 + 1
+                local endIdx = math.min(searchHistoryPage * 10, table.getn(tableSearchHistory))
+                for i = startIdx, endIdx do
+                    table.insert(tableSearchHistoryDisplay, tableSearchHistory[i])
+                end
+                
+                SearchHistory.Draw(tableSearchHistoryDisplay, searchHistoryIdx)
+            end
         end
 
         if isLoading then
-            Loading.Draw()
+            Loading.Draw(loadingText)
         end
 
         love.graphics.pop()
@@ -130,17 +146,26 @@ end
 function love.update(dt)
     local playDone = Thread.GetPlayDone():pop()
     if playDone then
+        isLoading = false
         isPlaying = false
     end
 
     if isPlaying then
-        love.timer.sleep(3)
+        love.timer.sleep(1)
         return
     end
 
-    -- if isMinimized then
-    --     restoreWindow()
-    -- end
+    local trackingYtDlp = Thread.GetTrackingYtDlpResultChannel():pop()
+    if trackingYtDlp then
+        if trackingYtDlp == "done" then
+            isLoading = false
+            isPlaying = true
+        else
+            setLoadingState(true, trackingYtDlp)
+        end
+
+        return
+    end
 
     local ytdlpUpdated = Thread.GetUpdateYtDlpResultChannel():pop()
     if ytdlpUpdated then
@@ -178,10 +203,6 @@ function love.update(dt)
         LoadOfflineImgData()
         cDownloadedIdx = 1
         cDownloadedPage = 1
-    end
-
-    if isLoading then
-        Loading.Update(dt)
     end
 end
 
@@ -331,6 +352,9 @@ function GuideUI()
         Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 50, "       Backspace")
         love.graphics.draw(Icon.X, xPos + 5, yPos + heightTextBlock + 48, 0, 0.4)
 
+        Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 80, "       History")
+        love.graphics.draw(Icon.R1, xPos + 5, yPos + heightTextBlock + 82, 0, 0.4)
+
         Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 20, "       Space")
         love.graphics.draw(Icon.B, xPos + 5 + 100, yPos + heightTextBlock + 18, 0, 0.4)
 
@@ -358,7 +382,8 @@ function GuideUI()
     Text.DrawLeftText(xPos + 10, yPos + heightTextBlock + 120, "       Exit")
     love.graphics.draw(Icon.B, xPos + 5, yPos + heightTextBlock + 118, 0, 0.4)
 
-    Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 120, "Menu: Update Yt-Dlp")
+    Text.DrawLeftText(xPos + 10 + 100, yPos + heightTextBlock + 120, "       Update yt-dlp")
+    love.graphics.draw(Icon.R1 , xPos + 5 + 100, yPos + heightTextBlock + 122, 0, 0.4)
 end
 
 function LoadImgData()
@@ -456,6 +481,38 @@ end
 
 function OnKeyPress(key)
     if isLoading then return end
+
+    if isShowSearchHistory then
+        SearchHistory.keypressed(key,
+        function(action)
+            if action == "close" then
+                isShowSearchHistory = false
+            elseif action == "select" then
+                local selPos = (searchHistoryPage - 1) * 10 + searchHistoryIdx
+                keyboardText = tableSearchHistory[selPos]
+                isShowSearchHistory = false
+            elseif action == "delete" then
+                local delPos = (searchHistoryPage - 1) * 10 + searchHistoryIdx
+                table.remove(tableSearchHistory, delPos)
+                if searchHistoryIdx > table.getn(tableSearchHistory) then
+                    searchHistoryIdx = table.getn(tableSearchHistory)
+                end
+                CT.SaveSearchHistory(tableSearchHistory)
+
+            elseif action == "up" then
+                GridKeyUp(tableSearchHistory, searchHistoryPage, searchHistoryIdx, 10,
+                function(idx) searchHistoryIdx = idx end,
+                function(page) searchHistoryPage = page end)
+            elseif action == "down" then
+                GridKeyDown(tableSearchHistory, searchHistoryPage, searchHistoryIdx, 10,
+                function(idx) searchHistoryIdx = idx end,
+                function(page) searchHistoryPage = page end)
+            end
+        end)
+        
+        return
+    end
+
     if key == "b" and not isPlaying and not isKeyboarFocus then
         love.event.quit()
     end
@@ -465,8 +522,21 @@ function OnKeyPress(key)
     end
 
     if (key == "start" or key == "s") and #keyboardText > 0 then
-        isLoading = true
+        setLoadingState(true, "searching...")
         isKeyboarFocus = false
+
+        local isExist = false
+        for _,text in pairs(tableSearchHistory) do
+            if text == keyboardText then
+                isExist = true
+                break
+            end
+        end
+        if not isExist then
+            table.insert(tableSearchHistory, 1, keyboardText)
+            CT.SaveSearchHistory(tableSearchHistory)
+        end
+
         CT.Search(keyboardText)
     end
 
@@ -477,6 +547,11 @@ function OnKeyPress(key)
     end
 
     if isKeyboarFocus then
+        if key == "r1" then
+            isShowSearchHistory = true
+            return
+        end
+
         Keyboard.keypressed(key, OnKeyboarCallBack)
         return
     end
@@ -489,15 +564,13 @@ function OnKeyPress(key)
         if isShowOnlineList then
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
-                isPlaying = true
-                -- minimizeWindow()
+                 setLoadingState(true, "loading...")
                 CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id), _screenH)
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
                 isPlaying = true
-                -- minimizeWindow()
                 CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH, _screenH)
             end
         end
@@ -508,19 +581,20 @@ function OnKeyPress(key)
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
                 isLoading = true
+                loadingText = "downloading..."
                 CT.GenerateMediaFile(searchData[pos])
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
-                isLoading = true
+                setLoadingState(true, "deleting...")
                 CT.DeleteMediaFile(downloadedData[pos].id)
             end
         end
     end
 
-    if key == "guide" then
-        isLoading = true
+    if key == "r1" then
+        setLoadingState(true, "updating yt-dlp...")
         Thread.GetUpdateYtDlpChannel():push({type = "update"})
         return
     end
@@ -549,10 +623,6 @@ function OnKeyPress(key)
                 function(page) cDownloadedPage = page end)
             end
         end
-
-        if key == "r1" then
-            
-        end
     end
 end
 
@@ -565,14 +635,9 @@ function ChangeOfflineMode()
     end
 end
 
-function minimizeWindow()
-    -- love.window.setMode(1, 1, {borderless = true})
-    -- isMinimized = true
-end
-
-function restoreWindow()
-    -- love.window.setMode(_screenW, _screenH, {resizable = true})
-    -- isMinimized = false
+function setLoadingState(isShow, text)
+    isLoading = isShow
+    loadingText = text
 end
 
  function GridKeyUp(list,currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
