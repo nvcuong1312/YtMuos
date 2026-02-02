@@ -55,4 +55,35 @@ $GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" & ffplay -fs "$URL" -autoexit -
 kill -9 "$(pidof gptokeyb3)"
 ]]
 
+Config.PLAY_MPV_CMD =
+[[
+#!/bin/bash
+
+URL="%s"
+RESOLUTION="%s"
+
+GPTOKEYB="/tmp/gptokeyb3"
+
+rm -f /tmp/yt-dlp.log
+
+$GPTOKEYB "mpv" -c "/tmp/general.gptk" &
+yt-dlp --no-warnings --js-runtimes "deno:/usr/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> /tmp/yt-dlp.log | /usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
+
+kill -9 "$(pidof gptokeyb3)"
+]]
+
+Config.PLAY_MPV_OFFLINE_CMD =
+[[
+#!/bin/bash
+
+URL="%s"
+
+GPTOKEYB="/tmp/gptokeyb3"
+
+$GPTOKEYB "mpv" -c "/tmp/general.gptk" &
+/usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 "$URL"
+
+kill -9 "$(pidof gptokeyb3)"
+]]
+
 return Config

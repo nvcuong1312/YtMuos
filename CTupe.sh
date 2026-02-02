@@ -35,6 +35,10 @@ if [ ! -f "/tmp/general_ffplay.gptk" ]; then
   cp "$GAMEDIR/data/general_ffplay.gptk" "/tmp/general_ffplay.gptk"
 fi
 
+if [ ! -f "/tmp/general.gptk" ]; then
+  cp "$GAMEDIR/data/general.gptk" "/tmp/general.gptk"
+fi
+
 if [ ! -f "/usr/bin/deno" ]; then
   cp "$GAMEDIR/bin/deno" "/usr/bin/deno"
 fi
