@@ -489,7 +489,7 @@ function OnKeyboarCallBack(value)
 end
 
 function OnKeyPress(key)
-    if isLoading then return end
+    if isLoading or isPlaying then return end
 
     if isShowSearchHistory then
         SearchHistory.keypressed(key,
