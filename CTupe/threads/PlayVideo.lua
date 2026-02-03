@@ -9,13 +9,13 @@ while true do
     if uObj then
         local url = uObj.url
         local res = "res:"..(uObj.resolution or "720")
-
+        
         if uObj.isOnline then
-            local command = string.format(Config.PLAY_FFPLAY_CMD, url, res)
+            local command = string.format(Config.PLAY_CMD, url, res)
             os.execute(command)
             dChn:push(true)
         else
-            local command = string.format(Config.PLAY_FFPLAY_OFFLINE_CMD, url)
+            local command = string.format(Config.PLAY_OFFLINE_CMD, url)
             os.execute(command)
             dChn:push(true)
         end

@@ -110,7 +110,7 @@ function love.load()
 
     hasAPIKEY = true
 
-    if not fileExists("/usr/bin/yt-dlp") then
+    if not fileExists("bin/yt-dlp") then
         OnKeyPress("r1")
     end
 end
@@ -320,6 +320,12 @@ function RenderBodyList(datas, page, idx, imgs)
         love.graphics.setColor(Color.WHITE)
         love.graphics.draw(Icon.Thumbnail, xPos + widthItem + 1 + 105, yPos + 45, 0, 0.5, 0.5)
     end
+
+    love.graphics.setFont(Font.Big())
+    love.graphics.setColor(Color.BODY_TITLE_ITEM)
+
+    local infoText = tostring(((page -1) * Config.GRID_PAGE_ITEM) + idx) .. " / " .. tostring(total)
+    Text.DrawLeftText(580, 3, infoText)
 end
 
 function BottomUI()
@@ -347,7 +353,7 @@ function GuideUI()
     love.graphics.setColor(Color.GUIDE_TB_BOR_BG)
     love.graphics.rectangle("line", xPos + 2, yPos + 2, width - 30, heightTextBlock, 3,3)
     love.graphics.setColor(Color.GUIDE_TB)
-    Text.DrawLeftText(xPos + 2 + 2, yPos + 2 + 5, keyboardText)
+    Text.DrawLeftText(xPos + 2 + 2, yPos + 2 + 2, keyboardText)
     love.graphics.setColor(Color.GUIDE_TB)
     love.graphics.draw(Icon.Search, xPos + width - 50, yPos + 5, 0, 0.2)
 
@@ -632,6 +638,30 @@ function OnKeyPress(key)
                 function(page) cDownloadedPage = page end)
             end
         end
+
+        if key == "left" then
+            if isShowOnlineList then
+                GridKeyLeft(searchData, cPage, cIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cIdx = idx end,
+                function(page) cPage = page end)
+            else
+                GridKeyLeft(downloadedData, cDownloadedPage, cDownloadedIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cDownloadedIdx = idx end,
+                function(page) cDownloadedPage = page end)
+            end
+        end
+
+        if key == "right" then
+            if isShowOnlineList then
+                GridKeyRight(searchData, cPage, cIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cIdx = idx end,
+                function(page) cPage = page end)
+            else
+                GridKeyRight(downloadedData, cDownloadedPage, cDownloadedIdx, Config.GRID_PAGE_ITEM,
+                function(idx) cDownloadedIdx = idx end,
+                function(page) cDownloadedPage = page end)
+            end
+        end
     end
 end
 
@@ -722,6 +752,50 @@ function GridKeyDown(list, currPage, idxCurr, maxPageItem, callBackSetIdx, callB
         if idxCurr < total then
             callBackSetIdx(idxCurr + 1)
         else
+            callBackSetIdx(1)
+        end
+    end
+end
+
+function GridKeyLeft(list, currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
+    local total = table.getn(list)
+    if total < 1 or total == 1 then return end
+    local isMultiplePage = total > maxPageItem
+    if isMultiplePage then
+        local remainder = total % maxPageItem
+        local totalPage = 1
+        local q, _ = math.modf(total / maxPageItem)
+        if remainder > 0 then
+            totalPage =  q + 1
+        else
+            totalPage = q
+            remainder = maxPageItem
+        end
+
+        if currPage > 1 then
+            callBackChangeCurrPage(currPage - 1)
+            callBackSetIdx(1)
+        end
+    end
+end
+
+function GridKeyRight(list, currPage, idxCurr, maxPageItem, callBackSetIdx, callBackChangeCurrPage)
+    local total = table.getn(list)
+    if total < 1 or total == 1 then return end
+    local isMultiplePage = total > maxPageItem
+    if isMultiplePage then
+        local remainder = total % maxPageItem
+        local totalPage = 1
+        local q, _ = math.modf(total / maxPageItem)
+        if remainder > 0 then
+            totalPage =  q + 1
+        else
+            totalPage = q
+            remainder = maxPageItem
+        end
+
+        if currPage < totalPage then
+            callBackChangeCurrPage(currPage + 1)
             callBackSetIdx(1)
         end
     end

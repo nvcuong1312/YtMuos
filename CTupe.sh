@@ -25,6 +25,30 @@ GAMEDIR="/$directory/ports/CTupe"
 GPTOKEYB="$GAMEDIR/bin/gptokeyb2"
 BINDIR="$GAMEDIR/bin"
 
+HAS_FFPLAY=0
+HAS_MPV=0
+if command -v ffplay >/dev/null 2>&1; then
+  HAS_FFPLAY=1
+elif command -v mpv >/dev/null 2>&1; then
+  HAS_MPV=1
+else
+  echo "No compatible media player found. Please install ffplay or mpv."
+  exit 1
+fi
+
+if [ -f "$GAMEDIR/data/MEDIA_TYPE" ]; then
+  PlayerType=$(cat "$GAMEDIR/data/MEDIA_TYPE")
+else
+  PlayerType=1
+fi
+
+if [ "$PlayerType" -eq 1 ] && [ "$HAS_FFPLAY" -eq 0 ]; then
+  PlayerType=2
+fi
+
+echo "$GAMEDIR" > /tmp/ctupe_dir
+echo "$PlayerType" > /tmp/ctupe_player
+
 export LD_LIBRARY_PATH="$BINDIR/libs.aarch64:$LD_LIBRARY_PATH"
 
 if [ ! -f "/tmp/gptokeyb3" ]; then
@@ -35,8 +59,8 @@ if [ ! -f "/tmp/general_ffplay.gptk" ]; then
   cp "$GAMEDIR/data/general_ffplay.gptk" "/tmp/general_ffplay.gptk"
 fi
 
-if [ ! -f "/usr/bin/deno" ]; then
-  cp "$GAMEDIR/bin/deno" "/usr/bin/deno"
+if [ ! -f "/tmp/general.gptk" ]; then
+  cp "$GAMEDIR/data/general.gptk" "/tmp/general.gptk"
 fi
 
 # Launcher
