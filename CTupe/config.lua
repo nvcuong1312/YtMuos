@@ -25,7 +25,7 @@ Config.SEARCH_MAX_RESULT = 30
 
 Config.YT_PLAY_URL = "https://www.youtube.com/watch?v=%s"
 
-Config.PLAY_FFPLAY_CMD =
+Config.PLAY_CMD =
 [[
 #!/bin/bash
 
@@ -36,13 +36,23 @@ GPTOKEYB="/tmp/gptokeyb3"
 
 rm -f /tmp/yt-dlp.log
 
-$GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" &
-yt-dlp --no-warnings --js-runtimes "deno:/usr/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> /tmp/yt-dlp.log | /usr/bin/ffplay -fs - -autoexit -loglevel quiet
+directory=$(cat /tmp/ctupe_dir)
+player=$(cat /tmp/ctupe_player)
+
+ytdlpCmd="/$directory/bin/yt-dlp --no-warnings --js-runtimes "deno:/$directory/bin/deno" -S "$RESOLUTION" "$URL" -o -"
+
+if [ "$player" -eq 1 ]; then
+    $GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" &
+    $ytdlpCmd 2> /tmp/yt-dlp.log | $(which ffplay) -fs - -autoexit -loglevel quiet
+elif [ "$player" -eq 2 ]; then
+    $GPTOKEYB "mpv" -c "/tmp/general.gptk" &
+    $ytdlpCmd 2> /tmp/yt-dlp.log | $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
+fi
 
 kill -9 "$(pidof gptokeyb3)"
 ]]
 
-Config.PLAY_FFPLAY_OFFLINE_CMD =
+Config.PLAY_OFFLINE_CMD =
 [[
 #!/bin/bash
 
@@ -50,38 +60,13 @@ URL="%s"
 
 GPTOKEYB="/tmp/gptokeyb3"
 
-$GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" & ffplay -fs "$URL" -autoexit -loglevel quiet
-
-kill -9 "$(pidof gptokeyb3)"
-]]
-
-Config.PLAY_MPV_CMD =
-[[
-#!/bin/bash
-
-URL="%s"
-RESOLUTION="%s"
-
-GPTOKEYB="/tmp/gptokeyb3"
-
-rm -f /tmp/yt-dlp.log
-
-$GPTOKEYB "mpv" -c "/tmp/general.gptk" &
-yt-dlp --no-warnings --js-runtimes "deno:/usr/bin/deno" -S "$RESOLUTION" "$URL" -o - 2> /tmp/yt-dlp.log | /usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
-
-kill -9 "$(pidof gptokeyb3)"
-]]
-
-Config.PLAY_MPV_OFFLINE_CMD =
-[[
-#!/bin/bash
-
-URL="%s"
-
-GPTOKEYB="/tmp/gptokeyb3"
-
-$GPTOKEYB "mpv" -c "/tmp/general.gptk" &
-/usr/bin/mpv --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 "$URL"
+if [ "$(cat /tmp/ctupe_player)" -eq 1 ]; then
+    $GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" &
+    $(which ffplay) -fs "$URL" -autoexit -loglevel quiet
+elif [ "$(cat /tmp/ctupe_player)" -eq 2 ]; then
+    $GPTOKEYB "mpv" -c "/tmp/general.gptk" &
+    $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 "$URL"
+fi
 
 kill -9 "$(pidof gptokeyb3)"
 ]]
