@@ -32,20 +32,20 @@ Config.PLAY_CMD =
 URL="%s"
 RESOLUTION="%s"
 
-GPTOKEYB="/tmp/gptokeyb3"
-
 rm -f /tmp/yt-dlp.log
 
 directory=$(cat /tmp/ctupe_dir)
 player=$(cat /tmp/ctupe_player)
 
+GPTOKEYB="/$directory/bin/gptokeyb3"
+
 ytdlpCmd="/$directory/bin/yt-dlp --no-warnings --js-runtimes "deno:/$directory/bin/deno" -S "$RESOLUTION" "$URL" -o -"
 
 if [ "$player" -eq 1 ]; then
-    $GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" &
+    $GPTOKEYB "ffplay" -c "/$directory/data/general_ffplay.gptk" &
     $ytdlpCmd 2> /tmp/yt-dlp.log | $(which ffplay) -fs - -autoexit -loglevel quiet
 elif [ "$player" -eq 2 ]; then
-    $GPTOKEYB "mpv" -c "/tmp/general.gptk" &
+    $GPTOKEYB "mpv" -c "/$directory/data/general.gptk" &
     $ytdlpCmd 2> /tmp/yt-dlp.log | $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
 fi
 
@@ -58,13 +58,14 @@ Config.PLAY_OFFLINE_CMD =
 
 URL="%s"
 
-GPTOKEYB="/tmp/gptokeyb3"
+directory=$(cat /tmp/ctupe_dir)
+GPTOKEYB="/$directory/bin/gptokeyb3"
 
 if [ "$(cat /tmp/ctupe_player)" -eq 1 ]; then
-    $GPTOKEYB "ffplay" -c "/tmp/general_ffplay.gptk" &
+    $GPTOKEYB "ffplay" -c "/$directory/data/general_ffplay.gptk" &
     $(which ffplay) -fs "$URL" -autoexit -loglevel quiet
 elif [ "$(cat /tmp/ctupe_player)" -eq 2 ]; then
-    $GPTOKEYB "mpv" -c "/tmp/general.gptk" &
+    $GPTOKEYB "mpv" -c "/$directory/data/general.gptk" &
     $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 "$URL"
 fi
 
