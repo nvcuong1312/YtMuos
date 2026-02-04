@@ -17,10 +17,14 @@ source $controlfolder/control.txt
 
 get_controls
 
-LIB_IPOSE="libinterpose.aarch64.so"
-ln -sf "$controlfolder/$LIB_IPOSE" "/usr/lib/$LIB_IPOSE" >/dev/null 2>&1
+SUDO=""
+if command -v sudo >/dev/null 2>&1; then
+  SUDO="sudo"
+fi
 
-# Set variables
+LIB_IPOSE="libinterpose.aarch64.so"
+$SUDO ln -sf "$controlfolder/$LIB_IPOSE" "/usr/lib/$LIB_IPOSE" >/dev/null 2>&1
+
 GAMEDIR="/$directory/ports/CTupe"
 GPTOKEYB="$GAMEDIR/bin/gptokeyb2"
 BINDIR="$GAMEDIR/bin"
@@ -29,12 +33,18 @@ HAS_FFPLAY=0
 HAS_MPV=0
 if command -v ffplay >/dev/null 2>&1; then
   HAS_FFPLAY=1
-elif command -v mpv >/dev/null 2>&1; then
+fi
+
+if command -v mpv >/dev/null 2>&1; then
   HAS_MPV=1
-else
-  echo "No compatible media player found. Please install ffplay or mpv."
+fi
+
+if [ "$HAS_FFPLAY" -eq 0 ] && [ "$HAS_MPV" -eq 0 ]; then
+  echo "ffplay or mpv is not found!." > /tmp/ctupe_log
   exit 1
 fi
+
+echo "FFPLAY: $HAS_FFPLAY, MPV: $HAS_MPV" > /tmp/ctupe_log
 
 if [ -f "$GAMEDIR/data/MEDIA_TYPE" ]; then
   PlayerType=$(cat "$GAMEDIR/data/MEDIA_TYPE")
@@ -50,18 +60,6 @@ echo "$GAMEDIR" > /tmp/ctupe_dir
 echo "$PlayerType" > /tmp/ctupe_player
 
 export LD_LIBRARY_PATH="$BINDIR/libs.aarch64:$LD_LIBRARY_PATH"
-
-if [ ! -f "/tmp/gptokeyb3" ]; then
-  cp "$GAMEDIR/bin/gptokeyb3" "/tmp/gptokeyb3"
-fi
-
-if [ ! -f "/tmp/general_ffplay.gptk" ]; then
-  cp "$GAMEDIR/data/general_ffplay.gptk" "/tmp/general_ffplay.gptk"
-fi
-
-if [ ! -f "/tmp/general.gptk" ]; then
-  cp "$GAMEDIR/data/general.gptk" "/tmp/general.gptk"
-fi
 
 # Launcher
 cd "$GAMEDIR" || exit
