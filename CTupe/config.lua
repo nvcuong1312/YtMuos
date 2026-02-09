@@ -43,10 +43,10 @@ ytdlpCmd="/$directory/bin/yt-dlp --no-warnings --js-runtimes "deno:/$directory/b
 
 if [ "$player" -eq 1 ]; then
     $GPTOKEYB "ffplay" -c "/$directory/data/general_ffplay.gptk" &
-    $ytdlpCmd 2> /tmp/yt-dlp.log | $(which ffplay) -fs - -autoexit -loglevel quiet
+    $ytdlpCmd < /dev/null 2> /tmp/yt-dlp.log | $(which ffplay) -fs - -autoexit -loglevel quiet
 elif [ "$player" -eq 2 ]; then
     $GPTOKEYB "mpv" -c "/$directory/data/general.gptk" &
-    $ytdlpCmd 2> /tmp/yt-dlp.log | $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
+    $ytdlpCmd < /dev/null 2> /tmp/yt-dlp.log | $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
 fi
 
 kill -9 "$(pidof gptokeyb3)"
