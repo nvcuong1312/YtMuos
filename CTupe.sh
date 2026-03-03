@@ -56,7 +56,7 @@ if [ "$PlayerType" -eq 1 ] && [ "$HAS_FFPLAY" -eq 0 ]; then
   PlayerType=2
 fi
 
-# echo "$GAMEDIR" > /tmp/ctupe_dir
+echo "$GAMEDIR" > /tmp/ctupe_dir
 # echo "$PlayerType" > /tmp/ctupe_player
 
 export LD_LIBRARY_PATH="$BINDIR/libs.aarch64:$LD_LIBRARY_PATH"
