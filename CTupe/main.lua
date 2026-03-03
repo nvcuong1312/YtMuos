@@ -579,14 +579,18 @@ function OnKeyPress(key)
         if isShowOnlineList then
             local pos = (cPage - 1) * Config.GRID_PAGE_ITEM + cIdx
             if table.getn(searchData) >= pos  then
-                 setLoadingState(true, "loading...")
-                CT.Play(string.format(Config.YT_PLAY_URL, searchData[pos].id), _screenH)
+                os.execute("echo " .. string.format(Config.YT_PLAY_URL, searchData[pos].id) .. " > /tmp/ctupe_url")
+                os.execute("echo " .. _screenH .. " > /tmp/ctupe_res")
+                os.execute("echo " .. 1 .. " > /tmp/ctupe_mode")
+                love.event.quit(2)
             end
         else
             local pos = (cDownloadedPage - 1) * Config.GRID_PAGE_ITEM + cDownloadedIdx
             if table.getn(downloadedData) >= pos  then
-                isPlaying = true
-                CT.PlayOffline(baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH, _screenH)
+                os.execute("echo " .. baseSavePath .. Config.PATH_SEPARATOR .. downloadedData[pos].id .. Config.PATH_SEPARATOR .. Config.SAVE_MEDIA_PATH .. " > /tmp/ctupe_url")
+                os.execute("echo " .. _screenH .. " > /tmp/ctupe_res")
+                os.execute("echo " .. 2 .. " > /tmp/ctupe_mode")
+                love.event.quit(2)
             end
         end
     end

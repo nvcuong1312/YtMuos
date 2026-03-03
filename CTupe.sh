@@ -56,16 +56,52 @@ if [ "$PlayerType" -eq 1 ] && [ "$HAS_FFPLAY" -eq 0 ]; then
   PlayerType=2
 fi
 
-echo "$GAMEDIR" > /tmp/ctupe_dir
-echo "$PlayerType" > /tmp/ctupe_player
+# echo "$GAMEDIR" > /tmp/ctupe_dir
+# echo "$PlayerType" > /tmp/ctupe_player
 
 export LD_LIBRARY_PATH="$BINDIR/libs.aarch64:$LD_LIBRARY_PATH"
 
 # Launcher
 cd "$GAMEDIR" || exit
 
-# Run Application
-$GPTOKEYB "love" &
-./bin/love .
+run_app() {
+  # Run Application
+  $GPTOKEYB "love" & ./bin/love .
+  RET=$?
 
-kill -9 "$(pidof gptokeyb2)"
+  kill -9 "$(pidof gptokeyb2)"
+
+  [ "$RET" -ne 2 ] && exit "$RET"
+}
+
+run_media() {
+  URL=$(cat /tmp/ctupe_url)
+  RESOLUTION=$(cat /tmp/ctupe_res)
+  RUN_MODE=$(cat /tmp/ctupe_mode)
+
+  if [ "$RUN_MODE" -eq 1 ]; then
+    ytdlpCmd="/$GAMEDIR/bin/yt-dlp --no-warnings --js-runtimes "deno:/$GAMEDIR/bin/deno" -S "$RESOLUTION" "$URL" -o -"
+    if [ "$PlayerType" -eq 1 ]; then
+        $GPTOKEYB "ffplay" -c "/$GAMEDIR/data/general_ffplay.gptk" &
+        $ytdlpCmd < /dev/null 2> /tmp/yt-dlp.log | $(which ffplay) -fs - -autoexit -loglevel quiet
+    elif [ "$PlayerType" -eq 2 ]; then
+        $GPTOKEYB "mpv" -c "/$GAMEDIR/data/general.gptk" &
+        $ytdlpCmd < /dev/null 2> /tmp/yt-dlp.log | $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 -
+    fi
+  else
+    if [ $PlayerType -eq 1 ]; then
+        $GPTOKEYB "ffplay" -c "/$GAMEDIR/data/general_ffplay.gptk" &
+        $(which ffplay) -fs "$URL" -autoexit -loglevel quiet
+    elif [ "$PlayerType" -eq 2 ]; then
+        $GPTOKEYB "mpv" -c "/$GAMEDIR/data/general.gptk" &
+        $(which mpv) --no-config --fullscreen --keepaspect=yes --video-zoom=0 --video-align-x=0 --video-align-y=0 "$URL"
+    fi
+  fi
+
+  kill -9 "$(pidof gptokeyb2)"
+}
+
+while true; do
+  run_app
+  run_media
+done
