@@ -11,7 +11,7 @@ while true do
         if searchData.type == "1" then
             local searchCmd = "wget \"https://www.youtube.com/results?search_query=".. searchData.search .. "&sp=EgIQAQ%3D%3D\" -O data/searchDataFull.txt"
             os.execute(searchCmd)
-            local jsCmd = "tr '\\n' ' ' < data/searchDataFull.txt | sed 's/.*var ytInitialData = //' | sed 's/\"targetId\":\"search-page\"}.*/\"targetId\":\"search-page\"}/' > data/result_cr.json"
+            local jsCmd = "grep -oP 'var ytInitialData = \\K.*?(?=;</script>)' data/searchDataFull.txt > data/result_cr.json"
             os.execute(jsCmd)
         else
             local searchCmd = string.format(Config.SEARCH_URL, searchData.search, Config.SEARCH_MAX_RESULT, searchData.key)
