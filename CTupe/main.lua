@@ -10,7 +10,7 @@ local Text = require("text")
 local Color = require("color")
 local Icon = require("icon")
 
-local version = "v1.2.4 - by nvcuong1312"
+local version = "v1.2.6 - by nvcuong1312"
 local hasAPIKEY = false
 
 local isShowOnlineList = true
